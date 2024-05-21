@@ -2,6 +2,9 @@ import json
 import time
 import requests
 import sett
+import app
+
+estadoUsuario = {}
 
 #Reconoce el tipo de mensaje y retorna el texto(mensaje).
 def obtenerMensajeWsp(message):
@@ -207,78 +210,51 @@ def admChatBot(text, number, messageId, name):
     text = text.lower()
     list = []
 
-    if 'hola' in text:
-        body = 'wenapo, que quieres'
-        footer = 'chatBotGod'
-        options = ['servicio 1', 'servicio 2']
+    if number not in estadoUsuario:
+        estadoUsuario[number] = {'estado': 'inicio'}
 
-        replyButtonData = generarMensajeConBotones(number, options, body, footer, 'sed1', messageId)
-        replyReaction = reaccionarMensaje(number, messageId, '💜')
-        list.append(replyButtonData)
-        list.append(replyReaction)
+    estado = estadoUsuario[number]['estado']
+
+    if estado == 'inicio':
+        if 'hola' in text:
+            body = 'Hola, ¿qué necesitas?'
+            footer = 'AsistenteWsp'
+            options = ['ver un excel', 'crear un excel', 'Modificar un excel']
+            listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed2', messageId)
+            replyReaction = reaccionarMensaje(number, messageId, '💜')
+            list.append(listReplyData)
+            list.append(replyReaction)
+            estadoUsuario[number]['estado'] = 'espera_opcion'
+        else:
+            data = formatearMensajeTexto(number, 'No entiendo, vuelve a repetir')
+            list.append(data)
     
-    elif 'servicio 1' in text:
-        body = 'estas son las opciones del servicio 1'
-        footer = 'chatBotGod'
-        options = ['servicio corneta', 'servicio poronga', 'otros servicios']
-
-        listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed2', messageId)
-        
-        list.append(listReplyData)
-
-    elif 'servicio corneta' in text:
-        body = 'Estas en servicio corneta'
-        footer = 'chatBotGod'
-        options = ['si quiero corneta', 'no quiero corneta']
-
-        replyButtonData = generarMensajeConBotones(number, options, body, footer, 'sed3', messageId)
-        print('esta es tu reply =>', replyButtonData)
-        list.append(replyButtonData)
-
-    elif 'si quiero corneta' in text: 
-        textMsg = formatearMensajeTexto(number, 'wena loco ya te voy a contactar')
-        
-        enviarMensajeWsp(textMsg)
-        
-        time.sleep(3)
-
-        document = generarDocumento(number, sett.documentUrl, 'ahora va', 'servicio corneta.pdf')
-        enviarMensajeWsp(document)
-        time.sleep(3)
-
-        body = 'te gustaria hacer otra cosa?'
-        footer = 'chatBotGod'
-        options = ['12345678912345678912', 'no'] #Las respuestas no pueden ser muy largas, el sistema se cae pero no te avisa, el limite es 22.
-
-        replyButtonData = generarMensajeConBotones(number, options, body, footer, 'sed4', messageId)
-        
-        list.append(replyButtonData)
-
-    elif 'si' in text:
-        body = 'que otra cosa quieres hacer ?'
-        footer = 'chatBotGod'
-        options = ['opcion a', 'opcion b']
-
-        listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed5', messageId)
-        
-        list.append(listReplyData)
-
-    elif 'opcion a' in text:
-        body = 'opcion a seleccinada, algo mas?'
-        footer = 'chatBotGod'
-        options = ['si, otra cosa', 'no, otra cosa']
-
-        buttonReply = generarMensajeConBotones(number, options, body, footer, 'sed6', messageId)
-        
-        list.append(buttonReply)
-
-    elif 'no, otra cosa' in text:
-        textMsg = formatearMensajeTexto(number, 'wena loco te aburriste')
+    elif estado == 'espera_opcion':
+        if 'ver un excel' in text:
+            estadoUsuario[number]['estado'] = 'espera_nombre_excel'
+            textMsg = formatearMensajeTexto(number, 'Dime el nombre del excel')
+            list.append(textMsg)
+        elif 'crear un excel' in text:
+            estadoUsuario[number]['estado'] = 'creando_excel'
+            textMsg = formatearMensajeTexto(number, 'Vamos a crear un excel. ¿Cómo quieres nombrarlo?')
+            list.append(textMsg)
+        elif 'modificar un excel' in text:
+            estadoUsuario[number]['estado'] = 'modificando_excel'
+            textMsg = formatearMensajeTexto(number, 'Dime el nombre del excel que quieres modificar')
+            list.append(textMsg)
+        else:
+            data = formatearMensajeTexto(number, 'No entiendo, vuelve a repetir')
+            list.append(data)
+    
+    elif estado == 'espera_nombre_excel':
+        nombre_excel = text
+        estadoUsuario[number]['estado'] = 'inicio'
+        textMsg = formatearMensajeTexto(number, f'El nombre del excel es: {nombre_excel}')
         list.append(textMsg)
-    else :
-        data = formatearMensajeTexto(number, 'no caché, que quieres?')
-        list.append(data)
-        
+       
+    
     for item in list:
         enviarMensajeWsp(item)
+
+
 
