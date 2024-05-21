@@ -8,6 +8,7 @@ app = Flask(__name__)
 def bienvenido():
     return 'Hola mundo chatBot, desde Flask'
 
+#Esta funcion es basicamente para conectar el bot a la nube de meta.
 @app.route('/webhook', methods = ['GET'])
 def verificar_token():
     try:
