@@ -5,7 +5,7 @@ import sett
 
 def obtenerMensajeWsp(message):
     if 'type' not in message:
-        text = 'Mensaje no reconocido'
+        text = 'mensaje no reconocido'
         return text
     
     typeMessage = message['type']
@@ -18,7 +18,7 @@ def obtenerMensajeWsp(message):
     elif typeMessage == 'interactive' and message['interactive']['type'] == 'button_reply':
         text = message['interactive']['button_reply']['title']
     else:
-        text = 'Mensaje no reconocido'
+        text = 'mensaje no reconocido'
 
     return text
 
@@ -40,6 +40,7 @@ def enviarMensajeWsp(data):
 
 
 def textMessage(number, text):
+    
     data = json.dumps(
         {
             "messaging_product": "whatsapp",    
@@ -99,6 +100,7 @@ def listReplyMessage(number, options, body, footer, sedd, messageId):
                 "description": ""
             }
         )
+
     data = json.dumps(
             {
                 "messaging_product": "whatsapp",
@@ -144,7 +146,7 @@ def documentMessage(number, url, caption, fileName):
                 "to": number,
                 "type": "document",
                 "document": {
-                    "url": url,
+                    "link": url,
                     "caption": caption,
                     "filename": fileName
                     }
@@ -153,17 +155,6 @@ def documentMessage(number, url, caption, fileName):
     )
     
     return data
-
-def getMediaId(media_name, media_type):
-    media_id = ''
-    if media_type == 'image':
-        media_id = sett.images.get(media_name, None)
-    elif media_type == 'video':
-        media_id = sett.videos.get(media_name, None)
-    elif media_type == 'audio':
-        media_id = sett.media_id_audio(media_name, None)
-    
-    return media_id
 
 def replyReactionMessage(number, messageId, emoji):
     data = json.dumps(
@@ -233,16 +224,17 @@ def admChatBot(text, number, messageId, name):
     elif 'servicio corneta' in text:
         body = 'Estas en servicio corneta'
         footer = 'chatBotGod'
-        options = ['Si quiero corneta', 'No quiero corneta']
+        options = ['si quiero corneta', 'No quiero corneta']
 
         replyButtonData = buttonReplyMessage(number, options, body, footer, 'sed3', messageId)
-        
+        print('esta es tu reply =>', replyButtonData)
         list.append(replyButtonData)
 
-    elif 'Si quiero corneta' in text:
+    elif 'si quiero corneta' in text: 
         textMsg = textMessage(number, 'wena loco ya te voy a contactar')
-
+        
         enviarMensajeWsp(textMsg)
+        
         time.sleep(3)
 
         document = documentMessage(number, sett.documentUrl, 'ahora va', 'servicio corneta.pdf')
@@ -280,7 +272,8 @@ def admChatBot(text, number, messageId, name):
         list.append(textMsg)
     else :
         data = textMessage(number, 'no caché, que quieres?')
-
+        list.append(data)
+        
     for item in list:
         enviarMensajeWsp(item)
 

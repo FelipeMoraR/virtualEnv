@@ -41,7 +41,7 @@ def recibir_mensajes():
         return 'enviado'
 
     except Exception as e:
-        return 'no enviado', e, 403
+        return 'no enviado' + str(e)
 
 if __name__ == '__main__':
     app.run()
