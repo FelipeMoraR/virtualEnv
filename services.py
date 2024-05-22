@@ -226,16 +226,17 @@ def admChatBot(text, number, messageId, name):
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
             options = ['ver un excel', 'crear un excel', 'Modificar un excel']
-            listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed1', messageId)
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed1', messageId)
             replyReaction = reaccionarMensaje(number, messageId, '💜')
             list.append(listReplyData)
             list.append(replyReaction)
             estadoUsuario[number]['estado'] = 'espera_opcion'
         else:
-            data = formatearMensajeTexto(number, 'No entiendo, vuelve a repetir')
-            msjEstado = formatearMensajeTexto(number, 'Estas en el paso de inicio')
+            data = formatearMensajeTexto(number, 'No entiendo')
             list.append(data)
-            list.append(msjEstado)
+            
+            
+            
     
     #Flujo que define que opcion va a tomar, si crear , ver o modificar
     elif estado == 'espera_opcion':
@@ -254,10 +255,15 @@ def admChatBot(text, number, messageId, name):
             list.append(textMsg)
 
         else:
-            data = formatearMensajeTexto(number, 'No entiendo, vuelve a repetir')
-            msjEstado = formatearMensajeTexto(number, 'Estas en el paso de espera a una opcion')
+            data = formatearMensajeTexto(number, 'No entiendo')
+            body = 'Solo entiendo estas opciones, ¿Que necesitas?'
+            footer = 'AsistenteWsp'
+            options = ['ver un excel', 'crear un excel', 'Modificar un excel']
+            buttonsReplyData = generarMensajeConBotones(number, options, body, footer, 'sed1', messageId)
             list.append(data)
-            list.append(msjEstado)
+            list.append(buttonsReplyData)
+            
+            
     
     #Defino que el flujo es ver un excel
     elif estado == 'ver_excel_pedir_nombre':
