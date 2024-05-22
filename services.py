@@ -2,7 +2,6 @@ import json
 import time
 import requests
 import sett
-import app
 
 estadoUsuario = {}
 
@@ -205,6 +204,13 @@ def marcarVisto(messageId):
 
     return data
 
+def verExcel(nombreExcel):
+    print(nombreExcel)
+    if (nombreExcel == 'testexcel'):
+        return True
+    else:
+        return False
+
 #Control del flujo del bot
 def admChatBot(text, number, messageId, name):
     text = text.lower()
@@ -220,39 +226,90 @@ def admChatBot(text, number, messageId, name):
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
             options = ['ver un excel', 'crear un excel', 'Modificar un excel']
-            listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed2', messageId)
+            listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed1', messageId)
             replyReaction = reaccionarMensaje(number, messageId, '💜')
             list.append(listReplyData)
             list.append(replyReaction)
             estadoUsuario[number]['estado'] = 'espera_opcion'
         else:
             data = formatearMensajeTexto(number, 'No entiendo, vuelve a repetir')
+            msjEstado = formatearMensajeTexto(number, 'Estas en el paso de inicio')
             list.append(data)
+            list.append(msjEstado)
     
+    #Flujo que define que opcion va a tomar, si crear , ver o modificar
     elif estado == 'espera_opcion':
         if 'ver un excel' in text:
-            estadoUsuario[number]['estado'] = 'espera_nombre_excel'
+            estadoUsuario[number]['estado'] = 'ver_excel_pedir_nombre'
             textMsg = formatearMensajeTexto(number, 'Dime el nombre del excel')
             list.append(textMsg)
         elif 'crear un excel' in text:
             estadoUsuario[number]['estado'] = 'creando_excel'
             textMsg = formatearMensajeTexto(number, 'Vamos a crear un excel. ¿Cómo quieres nombrarlo?')
             list.append(textMsg)
+
         elif 'modificar un excel' in text:
             estadoUsuario[number]['estado'] = 'modificando_excel'
             textMsg = formatearMensajeTexto(number, 'Dime el nombre del excel que quieres modificar')
             list.append(textMsg)
+
         else:
             data = formatearMensajeTexto(number, 'No entiendo, vuelve a repetir')
+            msjEstado = formatearMensajeTexto(number, 'Estas en el paso de espera a una opcion')
             list.append(data)
+            list.append(msjEstado)
     
-    elif estado == 'espera_nombre_excel':
+    #Defino que el flujo es ver un excel
+    elif estado == 'ver_excel_pedir_nombre':
         nombre_excel = text
-        estadoUsuario[number]['estado'] = 'inicio'
-        textMsg = formatearMensajeTexto(number, f'El nombre del excel es: {nombre_excel}')
-        list.append(textMsg)
-       
+        if verExcel(nombre_excel):
+            estadoUsuario[number]['estado'] = 'inicio' #Este estado es provisorio
+            data = formatearMensajeTexto(number, 'El excel existe')
+            enviarMensajeWsp(data)
+
+
+            time.sleep(3)
+
+            textMsg = formatearMensajeTexto(number, 'Cargando...')
+            enviarMensajeWsp(textMsg)
+            
+            time.sleep(3)
+
+            documento = generarDocumento(number, sett.documentUrl, 'Excel calentito', 'excelTest')
+            enviarMensajeWsp(documento)
+
+
+        else:
+            estadoUsuario[number]['estado'] = 'ver_excel_volver_intentar'
+            data = formatearMensajeTexto(number, 'El excel NO existe')
+            body = '¿Quieres volver a intentar?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed2', messageId)
+            list.append(data)
+            list.append(listReplyData)    
     
+    #Estado si desea volver a intentarlo
+    elif estado == 'ver_excel_volver_intentar':
+        if 'si' in text:
+            estadoUsuario[number]['estado'] = 'ver_excel_pedir_nombre'
+            data = formatearMensajeTexto(number, 'Ingrese el nombre del excel')
+            list.append(data)
+
+        elif 'no' in text:
+            estadoUsuario[number]['estado'] = 'inicio'
+            data = formatearMensajeTexto(number, 'Chau me voy a dormir')
+            list.append(data)
+        else:
+            data = formatearMensajeTexto(number, 'Mensaje erroneo')
+            list.append(data)
+
+            body = '¿Quieres volver a intentar?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed3', messageId)
+            list.append(listReplyData)
+
     for item in list:
         enviarMensajeWsp(item)
 
