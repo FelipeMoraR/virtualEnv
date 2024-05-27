@@ -23,7 +23,7 @@ def obtenerMensajeWsp(message):
         text = message['interactive']['button_reply']['title']
     else:
         text = 'mensaje no reconocido'
-
+    print('este es el texto => ', text)
     return text
 
 #Esto es basicamente el metodo post de meta, con esta función el bot puede mandar los mensajes.
@@ -253,7 +253,12 @@ def admChatBot(text, number, messageId, name):
     
     #Flujo que define que opcion va a tomar, si crear , ver o modificar
     elif estado == 'espera_opcion':
-        if 'ver un excel' in text:
+        if text == 'salir':
+            estadoUsuario[number]['estado'] = 'inicio' 
+            data = formatearMensajeTexto(number, 'Apagando...')
+            enviarMensajeWsp(data)
+        
+        elif 'ver un excel' in text:
             estadoUsuario[number]['estado'] = 'ver_excel_pedir_nombre'
             textMsg = formatearMensajeTexto(number, 'Dime el nombre del excel')
             list.append(textMsg)
@@ -292,7 +297,7 @@ def admChatBot(text, number, messageId, name):
             enviarMensajeWsp(data)
 
         elif verExcel(nombre_excel):
-            estadoUsuario[number]['estado'] = 'otra_accion' #Este estado es provisorio
+            estadoUsuario[number]['estado'] = 'otra_accion' 
             data = formatearMensajeTexto(number, 'El excel existe')
             enviarMensajeWsp(data)
 
@@ -326,14 +331,14 @@ def admChatBot(text, number, messageId, name):
             list.append(data)
             list.append(listReplyData)    
     
-    #Estado si desea volver a intentarlo
+    #Estado si desea volver a intentarlo de ver un excel
     elif estado == 'ver_excel_volver_intentar':
-        if 'si' in text:
+        if text == 'si':
             estadoUsuario[number]['estado'] = 'ver_excel_pedir_nombre'
             data = formatearMensajeTexto(number, 'Ingrese el nombre del excel')
             list.append(data)
 
-        elif 'no' in text:
+        elif text == 'no':
             estadoUsuario[number]['estado'] = 'inicio'
             data = formatearMensajeTexto(number, 'Chau me voy a dormir')
             list.append(data)
@@ -347,6 +352,7 @@ def admChatBot(text, number, messageId, name):
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed4', messageId)
             list.append(listReplyData)
     
+    #Flujo crear un excel
     elif estado == 'crear_excel':
         nombre_crear_excel = text
         if text == 'salir':
@@ -384,15 +390,29 @@ def admChatBot(text, number, messageId, name):
            
             list.append(listReplyData)
     
-
+    #Flujo de modificar un excel
     elif estado == 'modificar_excel':
         nombre_buscar_excel = text
-        if buscarExcel(nombre_buscar_excel):
-            estadoUsuario[number]['estado'] = 'inicio' #NUEVO ESTADO modificar_excel_accion, agregar luego
-            data = formatearMensajeTexto(number, 'Espere un momento...')
+        if text == 'salir':
+            estadoUsuario[number]['estado'] = 'inicio' 
+            data = formatearMensajeTexto(number, 'Apagando...')
             enviarMensajeWsp(data)
+
+        elif buscarExcel(nombre_buscar_excel):
+            estadoUsuario[number]['estado'] = 'modificar_excel_accion' 
+            data = formatearMensajeTexto(number, 'Excel encontrado')
+            enviarMensajeWsp(data)
+
+            time.sleep(2)
+
+            body = '¿Que deseas realizar en el excel?'
+            footer = 'AsistenteWsp'
+            options = ['Eliminar un gasto', 'Agregar un gasto']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed13', messageId)
+           
+            list.append(listReplyData) 
         else:
-            estadoUsuario[number]['estado'] = 'modificar_excel_volver_intentar' #NUEVO ESTADO, TRABAJANDO EN ELLO
+            estadoUsuario[number]['estado'] = 'modificar_excel_volver_intentar'
             data = formatearMensajeTexto(number, 'El excel NO existe')
             body = '¿Quieres volver a intentar modificar un excel?'
             footer = 'AsistenteWsp'
@@ -401,14 +421,45 @@ def admChatBot(text, number, messageId, name):
             list.append(data)
             list.append(listReplyData) 
     
+    #Flujo modificar un excel, eleccion de funcion 
+    elif estado == 'modificar_excel_accion':
+
+        if text == 'salir':
+            estadoUsuario[number]['estado'] = 'inicio' 
+            data = formatearMensajeTexto(number, 'Apagando...')
+            enviarMensajeWsp(data)
+        elif 'eliminar un gasto' in text:
+            estadoUsuario[number]['estado'] = 'modificar_excel_eliminar'
+            data = formatearMensajeTexto(number, '¿Que campo desea eliminar?. Ingrese el nombre.')
+            list.append(data)
+        elif 'agregar un gasto' in text:
+            estadoUsuario[number]['estado'] = 'modificar_excel_agregar'
+            data = formatearMensajeTexto(number, '¿Que campo desea agregar?. Ingrese el nombre.')
+            list.append(data)
+        else:
+            body = 'No entendí, seleccione una de las siguientes opciones'
+            footer = 'AsistenteWsp'
+            options = ['Eliminar un gasto', 'Agregar un gasto']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed14', messageId)
+           
+            list.append(listReplyData) 
+
+    elif estado == 'modificar_excel_eliminar':
+        estadoUsuario[number]['estado'] = 'inicio' #Aqui en teoria irian las funciones para eliminar un elemento de un excel en especifico
+        data = formatearMensajeTexto(number, 'Aqui iran las funciones para eliminar un elemento')
+        enviarMensajeWsp(data)
+    elif estado == 'modificar_excel_agregar':
+        estadoUsuario[number]['estado'] = 'inicio' #Aqui en teoria irian las funciones para agregar un elemento de un excel en especifico
+        data = formatearMensajeTexto(number, 'Aqui iran las funciones para agregar un elemento')
+        enviarMensajeWsp(data)
 
     elif estado == 'modificar_excel_volver_intentar':
-        if 'si' in text:
+        if text == 'si':
             estadoUsuario[number]['estado'] = 'modificar_excel'
             data = formatearMensajeTexto(number, 'Ingrese el nombre del excel a modificar')
             list.append(data)
 
-        elif 'no' in text:
+        elif text == 'no':
             estadoUsuario[number]['estado'] = 'inicio'
             data = formatearMensajeTexto(number, 'Chau me voy a dormir, gil.')
             list.append(data)
@@ -423,7 +474,7 @@ def admChatBot(text, number, messageId, name):
             list.append(listReplyData)
         
     elif estado == 'otra_accion':
-        if 'si' in text:
+        if text == 'si':
             estadoUsuario[number]['estado'] = 'espera_opcion'
             body = 'Hola de nuevo, ¿Qué necesitas?'
             footer = 'AsistenteWsp'
@@ -432,7 +483,7 @@ def admChatBot(text, number, messageId, name):
             list.append(listReplyData)
             
 
-        elif 'no' in text:
+        elif text == 'no':
             estadoUsuario[number]['estado'] = 'inicio'
             data = formatearMensajeTexto(number, 'Chau me voy a dormir, gil.')
             list.append(data)
