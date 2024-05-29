@@ -8,31 +8,40 @@ scope = ['https://www.googleapis.com/auth/spreadsheets',
 
 credenciales = ServiceAccountCredentials.from_json_keyfile_name('credenciales.json', scope) #lee el archivo json con las credenciales y su scope (alcance)
 
-cliente = gspread.authorize(credenciales) #Damos autorizacion dando credenciales, puede descargar , compartir, crear.
+cliente = gspread.authorize(credenciales) #Damos autorizacion para poder acceder a las funciones de la api.
 
-
-sheet = cliente.create("PrimeraBase")
 
 
 # Crear un servicio de Google Drive
 drive_service = build('drive', 'v3', credentials=credenciales)
 
-# sheet.share('felipestorage2@gmail.com', perm_type = 'user', role = 'writer')
-
-def sheet_exists(sheet_name):
-    query = f"name = '{sheet_name}' and mimeType = 'application/vnd.google-apps.spreadsheet'"
+def verificarExistenciaSheet(nombreExcel):
+    query = f"name = '{nombreExcel}' and mimeType = 'application/vnd.google-apps.spreadsheet'" # mimeType es simplemente para definir que tipo de documento/archivo es, puedes poner imagenes, audios, words, etc.
     results = drive_service.files().list(q=query, fields="files(id, name)").execute()
     files = results.get('files', [])
     
     if files:
-        print(f"Sheet '{sheet_name}' exists.")
+        print(files)
         return True
     else:
-        print(f"Sheet '{sheet_name}' does not exist.")
         return False
 
-# Verificar si existe una hoja de cálculo con un nombre específico
-nombre_hoja = "PrimeraBase2"
-existe = sheet_exists(nombre_hoja)
+def compartiExcel(hojaCalculo, correo):
+    hojaCalculo.share(correo, perm_type = 'user', role = 'writer') 
+    return
 
-print(existe)
+def crearExcel(nombreExcel, correo):
+    if verificarExistenciaSheet(nombreExcel):
+        print('El excel ya existe, porfavor ingresa otro nombre')
+        return False
+    else:
+        print('Creando excel')
+        sheet = cliente.create(nombreExcel, correo)
+        compartiExcel(sheet)
+        return True
+    
+
+# Verificar si existe una hoja de cálculo con un nombre específico
+nombre_hoja = "testNuevo"
+correo = 'felipestorage2@gmail.com'
+crearExcel(nombre_hoja, correo)
