@@ -4,6 +4,8 @@ import requests
 import sett
 
 estadoUsuario = {}
+elementosGuardar = [] #Lo que se mandará a la función.
+fila = [] #fila que tiene la finalidad de ser guardada dentro de elementosGuardar
 
 #Reconoce el tipo de mensaje y retorna el texto(mensaje).
 def obtenerMensajeWsp(message):
@@ -238,7 +240,7 @@ def admChatBot(text, number, messageId, name):
         if 'hola' in text:
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
-            options = ['ver un excel', 'crear un excel', 'Modificar un excel']
+            options = ['Ver un excel', 'Crear un excel', 'Modificar un excel']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed1', messageId)
             replyReaction = reaccionarMensaje(number, messageId, '💜')
             list.append(listReplyData)
@@ -430,11 +432,11 @@ def admChatBot(text, number, messageId, name):
             enviarMensajeWsp(data)
         elif 'eliminar un gasto' in text:
             estadoUsuario[number]['estado'] = 'modificar_excel_eliminar'
-            data = formatearMensajeTexto(number, '¿Que campo desea eliminar?. Ingrese el nombre.')
+            data = formatearMensajeTexto(number, 'Ingrese el nombre a eliminar.')
             list.append(data)
         elif 'agregar un gasto' in text:
-            estadoUsuario[number]['estado'] = 'modificar_excel_agregar'
-            data = formatearMensajeTexto(number, '¿Que campo desea agregar?. Ingrese el nombre.')
+            estadoUsuario[number]['estado'] = 'modificar_excel_agregar_nombre_gasto'
+            data = formatearMensajeTexto(number, 'Ingrese el nombre a agregar.')
             list.append(data)
         else:
             body = 'No entendí, seleccione una de las siguientes opciones'
@@ -448,10 +450,61 @@ def admChatBot(text, number, messageId, name):
         estadoUsuario[number]['estado'] = 'inicio' #Aqui en teoria irian las funciones para eliminar un elemento de un excel en especifico
         data = formatearMensajeTexto(number, 'Aqui iran las funciones para eliminar un elemento')
         enviarMensajeWsp(data)
-    elif estado == 'modificar_excel_agregar':
-        estadoUsuario[number]['estado'] = 'inicio' #Aqui en teoria irian las funciones para agregar un elemento de un excel en especifico
-        data = formatearMensajeTexto(number, 'Aqui iran las funciones para agregar un elemento')
+
+    elif estado == 'modificar_excel_agregar_nombre_gasto':
+        
+        fila.append(text)
+
+        data = formatearMensajeTexto(number, 'Ingrese el precio')
         enviarMensajeWsp(data)
+
+        estadoUsuario[number]['estado'] = 'modificar_excel_agregar_precio_gasto' 
+
+    elif estado == 'modificar_excel_agregar_precio_gasto':
+        fila.append(text)
+        elementosGuardar.append(fila.copy())
+        fila.clear()
+        
+        data = formatearMensajeTexto(number, 'Se agregó el gasto a la lista')
+        enviarMensajeWsp(data)
+
+        print('elementos a guardar => ', elementosGuardar)
+
+        body = '¿Desea agregar otro gasto?'
+        footer = 'AsistenteWsp'
+        options = ['Si', 'No']
+        listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed15', messageId)
+           
+        list.append(listReplyData) 
+
+        estadoUsuario[number]['estado'] = 'modificar_excel_agregar_otro_gasto'
+
+    elif estado == 'modificar_excel_agregar_otro_gasto':
+        if text == 'si':
+            estadoUsuario[number]['estado'] = 'modificar_excel_agregar_nombre_gasto'
+            data = formatearMensajeTexto(number, 'Ingrese el nombre a agregar.')
+            list.append(data)
+        elif text == 'no': #IMPORTANTE !!! AQUI DEBES EJECUTAR LAS FUNCIONES PARA AGREGAR LAS FILAS DENTRO DEL EXCEL
+            estadoUsuario[number]['estado'] = 'otra_accion'
+            data = formatearMensajeTexto(number, 'Agregando los elementos al excel....')
+            list.append(data)
+            
+            elementosGuardar.clear()
+            body = '¿Necesita otra cosa mas?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed17', messageId)
+            list.append(listReplyData) 
+            
+        else:
+            body = 'No entendi, selecciona una opcion, ¿Desea agregar otro gasto?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed16', messageId)
+           
+            list.append(listReplyData) 
+
+        
 
     elif estado == 'modificar_excel_volver_intentar':
         if text == 'si':
@@ -478,7 +531,7 @@ def admChatBot(text, number, messageId, name):
             estadoUsuario[number]['estado'] = 'espera_opcion'
             body = 'Hola de nuevo, ¿Qué necesitas?'
             footer = 'AsistenteWsp'
-            options = ['ver un excel', 'crear un excel', 'Modificar un excel']
+            options = ['Ver un excel', 'Crear un excel', 'Modificar un excel']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed11', messageId)
             list.append(listReplyData)
             
@@ -491,7 +544,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Mensaje erroneo')
             list.append(data)
 
-            body = '¿Necesita algo mas?'
+            body = 'No entendí, seleccione una opcion. ¿Necesita algo mas?'
             footer = 'AsistenteWsp'
             options = ['Si', 'No']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed8', messageId)

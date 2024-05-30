@@ -19,40 +19,42 @@ def agregarFilasDefault(excel_id):
     rows_to_add = [
         ['Nombre Gasto', 'Valor']
     ]
-    sheet = cliente.open_by_key(excel_id)
+    excel = cliente.open_by_key(excel_id)
     
-    worksheet = sheet.get_worksheet(0)
+    hojaCalculo = excel.get_worksheet(0) #Toma la primera hoja de calculo
     
-    worksheet.append_rows(rows_to_add)
+    hojaCalculo.append_rows(rows_to_add)
     print(f"{len(rows_to_add)} filas agregadas en la hoja de cálculo {excel_id}.")
 
 
 def agregarNuevasFilas(excel_id, hoja_trabajo_nombre, filas):
     # Abrir la hoja de cálculo por ID
-    sheet = cliente.open_by_key(excel_id)
+    excel = cliente.open_by_key(excel_id)
+
     # Seleccionar la hoja de trabajo por nombre, por ahora solo agrega en la primera hoja de trabajo
-    worksheet = sheet.get_worksheet(0)
+    hojaCalculo = excel.get_worksheet(0)
+
     # Agregar filas una debajo de otra
-    worksheet.append_rows(filas)
+    hojaCalculo.append_rows(filas)
     print(f"{len(filas)} filas agregadas en la hoja de cálculo {excel_id}.")
 
 def obtenerSheet(nombreExcel):
     query = f"name = '{nombreExcel}' and mimeType = 'application/vnd.google-apps.spreadsheet'" # mimeType es simplemente para definir que tipo de documento/archivo es, puedes poner imagenes, audios, words, etc.
-    results = drive_service.files().list(q=query, fields="files(id, name)").execute()
-    files = results.get('files', []) #Agarra el archivo y lo guarda en un array
+    resultado = drive_service.files().list(q=query, fields="files(id, name)").execute()
+    archivos = resultado.get('files', []) #Agarra el archivo y lo guarda en un array
 
-    if files:
-        objetoExcel = files[0]
+    if archivos:
+        objetoExcel = archivos[0]
         return objetoExcel
     else:
         return False
 
 def verificarExistenciaSheet(nombreExcel):
     query = f"name = '{nombreExcel}' and mimeType = 'application/vnd.google-apps.spreadsheet'" # mimeType es simplemente para definir que tipo de documento/archivo es, puedes poner imagenes, audios, words, etc.
-    results = drive_service.files().list(q=query, fields="files(id, name)").execute()
-    files = results.get('files', [])
+    resultado = drive_service.files().list(q=query, fields="files(id, name)").execute()
+    archivos = resultado.get('files', [])
     
-    if files:    
+    if archivos:    
         return True
     else:
         return False
@@ -67,8 +69,8 @@ def crearExcel(nombreExcel):
         return False
     else:
         print('Creando excel')
-        sheet = cliente.create(nombreExcel)
-        compartiExcel(sheet)
+        excelCreado = cliente.create(nombreExcel)
+        compartiExcel(excelCreado)
         nuevoExcel = obtenerSheet(nombreExcel)
         agregarFilasDefault(nuevoExcel['id'])
 
