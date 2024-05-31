@@ -370,7 +370,7 @@ def admChatBot(text, number, messageId, name):
             time.sleep(3)
 
             mensajeCreacion = formatearMensajeTexto(number, 'Documento se ha creado')
-            enviarMensajeWsp(mensajeCreacion)
+            enviarMensajeWsp(mensajeCreacion) #Esto deberia mandar la url del excel o el nomnbre del excel
 
             time.sleep(3)
 
@@ -431,7 +431,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Apagando...')
             enviarMensajeWsp(data)
         elif 'eliminar un gasto' in text:
-            estadoUsuario[number]['estado'] = 'modificar_excel_eliminar'
+            estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_nombre_gasto'
             data = formatearMensajeTexto(number, 'Ingrese el nombre a eliminar.')
             list.append(data)
         elif 'agregar un gasto' in text:
@@ -446,7 +446,7 @@ def admChatBot(text, number, messageId, name):
            
             list.append(listReplyData) 
 
-    elif estado == 'modificar_excel_eliminar':
+    elif estado == 'modificar_excel_eliminar_nombre_gasto':
         estadoUsuario[number]['estado'] = 'inicio' #Aqui en teoria irian las funciones para eliminar un elemento de un excel en especifico
         data = formatearMensajeTexto(number, 'Aqui iran las funciones para eliminar un elemento')
         enviarMensajeWsp(data)
@@ -489,7 +489,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Agregando los elementos al excel....')
             list.append(data)
             
-            elementosGuardar.clear()
+            elementosGuardar.clear() #Esto se limpia para una proxima inyeccion de filas.
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
             options = ['Si', 'No']

@@ -26,71 +26,107 @@ def agregarFilasDefault(excel_id):
     hojaCalculo.append_rows(rows_to_add)
     print(f"{len(rows_to_add)} filas agregadas en la hoja de cálculo {excel_id}.")
 
-
 def agregarNuevasFilas(excel_id, hoja_trabajo_nombre, filas):
-    # Abrir la hoja de cálculo por ID
-    excel = cliente.open_by_key(excel_id)
+    try:
+        # Abrir la hoja de cálculo por ID
+        excel = cliente.open_by_key(excel_id)
 
-    # Seleccionar la hoja de trabajo por nombre, por ahora solo agrega en la primera hoja de trabajo
-    hojaCalculo = excel.get_worksheet(0)
+        # Seleccionar la hoja de trabajo por nombre, por ahora solo agrega en la primera hoja de trabajo
+        hojaCalculo = excel.get_worksheet(0)
 
-    # Agregar filas una debajo de otra
-    hojaCalculo.append_rows(filas)
-    print(f"{len(filas)} filas agregadas en la hoja de cálculo {excel_id}.")
+        # Agregar filas una debajo de otra
+        hojaCalculo.append_rows(filas)
+        print(f"{len(filas)} filas agregadas en la hoja de cálculo {excel_id}.")
+    except Exception as e:
+        print(f"ocurrió un error: {e}")
 
-def obtenerSheet(nombreExcel):
-    query = f"name = '{nombreExcel}' and mimeType = 'application/vnd.google-apps.spreadsheet'" # mimeType es simplemente para definir que tipo de documento/archivo es, puedes poner imagenes, audios, words, etc.
-    resultado = drive_service.files().list(q=query, fields="files(id, name)").execute()
-    archivos = resultado.get('files', []) #Agarra el archivo y lo guarda en un array
+def obtenerSheet(nombre_excel): #Con esta funcion puedes obtener la id de un excel para utilizarla en otras funciones
+    try:
+        query = f"name = '{nombre_excel}' and mimeType = 'application/vnd.google-apps.spreadsheet'" # mimeType es simplemente para definir que tipo de documento/archivo es, puedes poner imagenes, audios, words, etc.
+        resultado = drive_service.files().list(q=query, fields="files(id, name)").execute()
+        archivos = resultado.get('files', []) #Agarra el archivo y lo guarda en un array
 
-    if archivos:
-        objetoExcel = archivos[0]
-        return objetoExcel
-    else:
-        return False
+        if archivos:
+            objetoExcel = archivos[0]
+            return objetoExcel
+        else:
+            return False
+        
+    except Exception as e:
+        print(f"ocurrió un error: {e}")
 
-def verificarExistenciaSheet(nombreExcel):
-    query = f"name = '{nombreExcel}' and mimeType = 'application/vnd.google-apps.spreadsheet'" # mimeType es simplemente para definir que tipo de documento/archivo es, puedes poner imagenes, audios, words, etc.
-    resultado = drive_service.files().list(q=query, fields="files(id, name)").execute()
-    archivos = resultado.get('files', [])
+def verificarExistenciaSheet(nombre_excel):
+    try:
+        query = f"name = '{nombre_excel}' and mimeType = 'application/vnd.google-apps.spreadsheet'" # mimeType es simplemente para definir que tipo de documento/archivo es, puedes poner imagenes, audios, words, etc.
+        resultado = drive_service.files().list(q=query, fields="files(id, name)").execute()
+        archivos = resultado.get('files', [])
     
-    if archivos:    
-        return True
-    else:
-        return False
+        if archivos:    
+            return True
+        else:
+            return False
+        
+    except Exception as e:
+        print(f"ocurrió un error: {e}")
 
-def compartiExcel(hojaCalculo):
-    hojaCalculo.share('felipestorage2@gmail.com', perm_type = 'user', role = 'writer') 
-    return
 
-def crearExcel(nombreExcel):
-    if verificarExistenciaSheet(nombreExcel):
-        print('El excel ya existe, porfavor ingresa otro nombre')
-        return False
-    else:
-        print('Creando excel')
-        excelCreado = cliente.create(nombreExcel)
-        compartiExcel(excelCreado)
-        nuevoExcel = obtenerSheet(nombreExcel)
-        agregarFilasDefault(nuevoExcel['id'])
+def crearExcel(nombre_excel):
+    try:
+        if verificarExistenciaSheet(nombre_excel):
+            print('El excel ya existe, porfavor ingresa otro nombre')
+            return False
+        else:
+            print('Creando excel')
+            excelCreado = cliente.create(nombre_excel)
+            compartiExcel(excelCreado)
+            nuevoExcel = obtenerSheet(nombre_excel)
+            agregarFilasDefault(nuevoExcel['id'])
 
-        return True
+            return True
+    except Exception as e:
+        print(f"ocurrió un error: {e}")
     
+
+def compartiExcel(hoja_calculo):
+    try:
+        hoja_calculo.share('felipestorage2@gmail.com', perm_type = 'user', role = 'writer') 
+    except Exception as e:
+        print(f"ocurrió un error: {e}")
+
+def eliminarCeldaFila(excel_id, hoja_trabajo ,contenido_celda):
+    try:
+        # Abrir la hoja de cálculo por ID
+        excel = cliente.open_by_key(excel_id)
+
+        # Seleccionar la hoja de trabajo por nombre, por ahora solo agrega en la primera hoja de trabajo
+        hoja_calculo = excel.get_worksheet(0)
+
+        #Encontrar todas las celdas
+        lista_celdas = hoja_calculo.findall(contenido_celda)
+
+        filas_a_eliminar = []
+
+        for celda in lista_celdas:
+            filas_a_eliminar.append(celda.row)
+
+        # Eliminar las filas de la hoja de cálculo
+        for fila in reversed(filas_a_eliminar):  # Se recorren en reversa para evitar problemas con los índices, suponte si elminas el primer elemento el siguiente toma el lugar del eliminado haciendo que se eliminen cosas que no se deben ej => [0, 1, 2] elimino el primero => [0(1), 1(2)] Como se puede apreciar se rompe el orden pero si lo hacemos en reversa esto no ocurre ej => [0, 1, 2] elimino el ultimo => [0(0), 1(1)] la posicion corresponde al valor.
+            hoja_calculo.delete_rows(fila)
+
+    except Exception as e:
+        print(f"ocurrió un error: {e}")
+ 
 
 # Verificar si existe una hoja de cálculo con un nombre específico
 nombre_hoja = "algonuevoExcelGood2"
 
 
 rows_to_add = [
-    ['Nombre', 'Apellido', 'Edad'],
     ['Juan', 'Perez', '30'],
     ['Ana', 'Gomez', '25']
 ]
 
-#if obtenerSheet(nombre_hoja):
-    #objExcelEncontrado = obtenerSheet(nombre_hoja)
-    #agregarNuevasFilas(objExcelEncontrado['id'], objExcelEncontrado['name'], rows_to_add)
-    
-#else:
-    #print('no pasa nah')
-crearExcel(nombre_hoja)
+objeto = obtenerSheet(nombre_hoja)
+
+eliminarCeldaFila(objeto['id'], objeto['name'], 'Ana')
+#agregarNuevasFilas(objeto['id'], objeto['name'], rows_to_add)
