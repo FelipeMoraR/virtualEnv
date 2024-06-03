@@ -93,14 +93,61 @@ def compartiExcel(hoja_calculo):
     except Exception as e:
         print(f"ocurrió un error: {e}")
 
-def eliminarCeldaFila(excel_id, hoja_trabajo ,contenido_celda):
+def formateoValoresPorEliminar(excel_id, hoja_trabajo, filas):
+    try:
+        valores_limpios = []
+        mensajes  = ""
+
+        # Abrir la hoja de cálculo por ID
+        excel = cliente.open_by_key(excel_id)
+       
+        # Seleccionar la hoja de trabajo por nombre, por ahora solo agrega en la primera hoja de trabajo
+        hoja_calculo = excel.get_worksheet(0)
+       
+        for fila in filas:
+            valores_fila = hoja_calculo.row_values(fila)
+            valores_limpios.append(valores_fila)
+        
+        for index, valor in enumerate(valores_limpios):
+            mensaje = "Posición {}: {}\n".format(index, ", ".join(valor))
+            mensajes += mensaje 
+        
+        return mensajes
+    
+    
+    except Exception as e:
+        print(f"ocurrió un error: {e}")
+
+
+
+def eliminarFilas(excel_id, hoja_trabajo, filas, fila_eliminar):
     try:
         # Abrir la hoja de cálculo por ID
         excel = cliente.open_by_key(excel_id)
-
+       
         # Seleccionar la hoja de trabajo por nombre, por ahora solo agrega en la primera hoja de trabajo
         hoja_calculo = excel.get_worksheet(0)
 
+        if len(filas) > 1:
+            hoja_calculo.delete_rows(filas[fila_eliminar])
+        elif len(filas) == 1:
+            hoja_calculo.delete_rows(filas[0])
+        else:
+            print('No existen valores en la lista') 
+
+    except Exception as e:
+        print(f"ocurrió un error: {e}")
+  
+
+
+def identificarValoresFilasEliminar(excel_id, hoja_trabajo ,contenido_celda):
+    try:
+        # Abrir la hoja de cálculo por ID
+        excel = cliente.open_by_key(excel_id)
+       
+        # Seleccionar la hoja de trabajo por nombre, por ahora solo agrega en la primera hoja de trabajo
+        hoja_calculo = excel.get_worksheet(0)
+       
         #Encontrar todas las celdas
         lista_celdas = hoja_calculo.findall(contenido_celda)
 
@@ -109,9 +156,7 @@ def eliminarCeldaFila(excel_id, hoja_trabajo ,contenido_celda):
         for celda in lista_celdas:
             filas_a_eliminar.append(celda.row)
 
-        # Eliminar las filas de la hoja de cálculo
-        for fila in reversed(filas_a_eliminar):  # Se recorren en reversa para evitar problemas con los índices, suponte si elminas el primer elemento el siguiente toma el lugar del eliminado haciendo que se eliminen cosas que no se deben ej => [0, 1, 2] elimino el primero => [0(1), 1(2)] Como se puede apreciar se rompe el orden pero si lo hacemos en reversa esto no ocurre ej => [0, 1, 2] elimino el ultimo => [0(0), 1(1)] la posicion corresponde al valor.
-            hoja_calculo.delete_rows(fila)
+        return filas_a_eliminar
 
     except Exception as e:
         print(f"ocurrió un error: {e}")
@@ -126,7 +171,21 @@ rows_to_add = [
     ['Ana', 'Gomez', '25']
 ]
 
+#Descubrimos el excel 
 objeto = obtenerSheet(nombre_hoja)
 
-eliminarCeldaFila(objeto['id'], objeto['name'], 'Ana')
 #agregarNuevasFilas(objeto['id'], objeto['name'], rows_to_add)
+
+filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'ASD')
+
+#eliminarFilas(objeto['id'], objeto['name'], filas, 0)
+
+if len(filas) > 1:
+    print('pedir que valor eliminar dentro del flujo')
+    print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas))
+elif len(filas) == 1:
+    print('Eliminar el unico valor')
+    print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas))
+else:
+    print('No existe niuna vaina')
+    print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas))

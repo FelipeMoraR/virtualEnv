@@ -5,7 +5,10 @@ import sett
 
 estadoUsuario = {}
 elementosGuardar = [] #Lo que se mandará a la función.
-fila = [] #fila que tiene la finalidad de ser guardada dentro de elementosGuardar
+filaGuardar = [] #fila que tiene la finalidad de ser guardada dentro de elementosGuardar 
+filasEliminar = 0
+MensajeFilasEliminar = ""
+objectoExcel = {} #obtenerSheet() hay que utilizar esta funcion dentro de #Flujo de modificar un excel
 
 #Reconoce el tipo de mensaje y retorna el texto(mensaje).
 def obtenerMensajeWsp(message):
@@ -404,7 +407,7 @@ def admChatBot(text, number, messageId, name):
             estadoUsuario[number]['estado'] = 'modificar_excel_accion' 
             data = formatearMensajeTexto(number, 'Excel encontrado')
             enviarMensajeWsp(data)
-
+            #Aqui habría que crear el objetoExcel
             time.sleep(2)
 
             body = '¿Que deseas realizar en el excel?'
@@ -448,12 +451,25 @@ def admChatBot(text, number, messageId, name):
 
     elif estado == 'modificar_excel_eliminar_nombre_gasto':
         estadoUsuario[number]['estado'] = 'inicio' #Aqui en teoria irian las funciones para eliminar un elemento de un excel en especifico
-        data = formatearMensajeTexto(number, 'Aqui iran las funciones para eliminar un elemento')
-        enviarMensajeWsp(data)
+        #filasEliminar = identificarValoresFilasEliminar(objectoExcel['id'], objectoExcel['name'], text) Con esto vamos a traer las filas 
 
+        #if len(filasEliminar) > 1:
+            #print('pedir que valor eliminar dentro del flujo')
+            #MensajeFilasEliminar = formateoValoresPorEliminar(objectoExcel['id'], objectoExcel['name'], filasEliminar)
+            #data = formatearMensajeTexto(number, MensajeFilasEliminar)
+            #enviarMensajeWsp(data)
+        #elif len(filasEliminar) == 1:
+            #print('Eliminar el unico valor')
+            #eliminarFilas(objeto['id'], objectoExcel['name'], filas, 0)
+        #else:
+            #print('No existe niuna vaina')
+            #data = formatearMensajeTexto(number, 'No existe el valor')
+            #enviarMensajeWsp(data)
+
+    #Flujo modificar excel pero el camino de agregar un gasto
     elif estado == 'modificar_excel_agregar_nombre_gasto':
         
-        fila.append(text)
+        filaGuardar.append(text)
 
         data = formatearMensajeTexto(number, 'Ingrese el precio')
         enviarMensajeWsp(data)
@@ -461,9 +477,9 @@ def admChatBot(text, number, messageId, name):
         estadoUsuario[number]['estado'] = 'modificar_excel_agregar_precio_gasto' 
 
     elif estado == 'modificar_excel_agregar_precio_gasto':
-        fila.append(text)
-        elementosGuardar.append(fila.copy())
-        fila.clear()
+        filaGuardar.append(text)
+        elementosGuardar.append(filaGuardar.copy())
+        filaGuardar.clear()
         
         data = formatearMensajeTexto(number, 'Se agregó el gasto a la lista')
         enviarMensajeWsp(data)
