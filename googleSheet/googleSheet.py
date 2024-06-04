@@ -1,13 +1,26 @@
 import gspread
+import sys
+import os
+# Añadir el directorio principal al PYTHONPATH
+directorio_principal = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if directorio_principal not in sys.path:
+    sys.path.append(directorio_principal)
+
+
+from sett import credencialesJson
 from oauth2client.service_account import ServiceAccountCredentials
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 
+
+
+
+
 scope = ['https://www.googleapis.com/auth/spreadsheets',
          'https://www.googleapis.com/auth/drive']
 
-credenciales = ServiceAccountCredentials.from_json_keyfile_name('credenciales.json', scope) #lee el archivo json con las credenciales y su scope (alcance)
-
+credenciales = ServiceAccountCredentials.from_json_keyfile_dict(credencialesJson, scope) #lee el archivo json con las credenciales y su scope (alcance)
+#from_json_keyfile_dict estamos pidiendo un json en formato de diccionario (dictionary) anteriormente estaba con name pues llamabamos un archivo
 cliente = gspread.authorize(credenciales) #Damos autorizacion para poder acceder a las funciones de la api.
 
 

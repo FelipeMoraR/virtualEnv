@@ -1,4 +1,5 @@
 chatBot
 readme.txt
 __pycache__
+.env
 credenciales.json
