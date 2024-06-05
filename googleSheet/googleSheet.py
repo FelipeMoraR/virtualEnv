@@ -9,10 +9,9 @@ if directorio_principal not in sys.path:
 
 from sett import credencialesJson
 from oauth2client.service_account import ServiceAccountCredentials
-from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 
-print("credenciales =>", credencialesJson)
+
 
 def conexionDriveBuildService():
     scope = ['https://www.googleapis.com/auth/spreadsheets',
@@ -47,10 +46,7 @@ def conexionDriveCliente():
     except Exception as e:
         print(f"ocurrió un error: {e}")    
 
-drive_service = conexionDriveBuildService()
-cliente = conexionDriveCliente()
-
-def agregarFilasDefault(excel_id):
+def agregarFilasDefault(excel_id, cliente):
     rows_to_add = [
         ['Nombre Gasto', 'Valor']
     ]
@@ -61,7 +57,7 @@ def agregarFilasDefault(excel_id):
     hojaCalculo.append_rows(rows_to_add)
     print(f"{len(rows_to_add)} filas agregadas en la hoja de cálculo {excel_id}.")
 
-def agregarNuevasFilas(excel_id, hoja_trabajo_nombre, filas):
+def agregarNuevasFilas(excel_id, hoja_trabajo_nombre, filas, cliente):
     try:
         # Abrir la hoja de cálculo por ID
         excel = cliente.open_by_key(excel_id)
@@ -75,7 +71,7 @@ def agregarNuevasFilas(excel_id, hoja_trabajo_nombre, filas):
     except Exception as e:
         print(f"ocurrió un error: {e}")
 
-def obtenerSheet(nombre_excel): #Con esta funcion puedes obtener la id de un excel para utilizarla en otras funciones
+def obtenerSheet(nombre_excel, drive_service): #Con esta funcion puedes obtener la id de un excel para utilizarla en otras funciones
     try:
         query = f"name = '{nombre_excel}' and mimeType = 'application/vnd.google-apps.spreadsheet'" # mimeType es simplemente para definir que tipo de documento/archivo es, puedes poner imagenes, audios, words, etc.
         resultado = drive_service.files().list(q=query, fields="files(id, name)").execute()
@@ -90,7 +86,7 @@ def obtenerSheet(nombre_excel): #Con esta funcion puedes obtener la id de un exc
     except Exception as e:
         print(f"ocurrió un error: {e}")
 
-def verificarExistenciaSheet(nombre_excel):
+def verificarExistenciaSheet(nombre_excel, drive_service):
     try:
         query = f"name = '{nombre_excel}' and mimeType = 'application/vnd.google-apps.spreadsheet'" # mimeType es simplemente para definir que tipo de documento/archivo es, puedes poner imagenes, audios, words, etc.
         resultado = drive_service.files().list(q=query, fields="files(id, name)").execute()
@@ -105,17 +101,17 @@ def verificarExistenciaSheet(nombre_excel):
         print(f"ocurrió un error: {e}")
 
 
-def crearExcel(nombre_excel):
+def crearExcel(nombre_excel, cliente, drive_service):
     try:
-        if verificarExistenciaSheet(nombre_excel):
+        if verificarExistenciaSheet(nombre_excel, drive_service):
             print('El excel ya existe, porfavor ingresa otro nombre')
             return False
         else:
             print('Creando excel')
             excelCreado = cliente.create(nombre_excel)
             compartiExcel(excelCreado)
-            nuevoExcel = obtenerSheet(nombre_excel)
-            agregarFilasDefault(nuevoExcel['id'])
+            nuevoExcel = obtenerSheet(nombre_excel, drive_service)
+            agregarFilasDefault(nuevoExcel['id'], cliente)
 
             return True
     except Exception as e:
@@ -128,7 +124,7 @@ def compartiExcel(hoja_calculo):
     except Exception as e:
         print(f"ocurrió un error: {e}")
 
-def formateoValoresPorEliminar(excel_id, hoja_trabajo, filas):
+def formateoValoresPorEliminar(excel_id, hoja_trabajo, filas, cliente):
     try:
         valores_limpios = []
         mensajes  = ""
@@ -155,7 +151,7 @@ def formateoValoresPorEliminar(excel_id, hoja_trabajo, filas):
 
 
 
-def eliminarFilas(excel_id, hoja_trabajo, filas, fila_eliminar):
+def eliminarFilas(excel_id, hoja_trabajo, filas, numero_fila_eliminar, cliente):
     try:
         # Abrir la hoja de cálculo por ID
         excel = cliente.open_by_key(excel_id)
@@ -164,7 +160,7 @@ def eliminarFilas(excel_id, hoja_trabajo, filas, fila_eliminar):
         hoja_calculo = excel.get_worksheet(0)
 
         if len(filas) > 1:
-            hoja_calculo.delete_rows(filas[fila_eliminar])
+            hoja_calculo.delete_rows(filas[numero_fila_eliminar])
         elif len(filas) == 1:
             hoja_calculo.delete_rows(filas[0])
         else:
@@ -175,7 +171,7 @@ def eliminarFilas(excel_id, hoja_trabajo, filas, fila_eliminar):
   
 
 
-def identificarValoresFilasEliminar(excel_id, hoja_trabajo ,contenido_celda):
+def identificarValoresFilasEliminar(excel_id, hoja_trabajo ,contenido_celda, cliente):
     try:
         # Abrir la hoja de cálculo por ID
         excel = cliente.open_by_key(excel_id)
@@ -197,8 +193,12 @@ def identificarValoresFilasEliminar(excel_id, hoja_trabajo ,contenido_celda):
         print(f"ocurrió un error: {e}")
  
 
+# Conexion
+drive_service = conexionDriveBuildService()
+cliente = conexionDriveCliente()
+
 # Verificar si existe una hoja de cálculo con un nombre específico
-nombre_hoja = "algonuevoExcelGood2"
+nombre_hoja = "algonuevoExcelGood23"
 
 
 rows_to_add = [
@@ -207,20 +207,22 @@ rows_to_add = [
 ]
 
 #Descubrimos el excel 
-objeto = obtenerSheet(nombre_hoja)
+objeto = obtenerSheet(nombre_hoja, drive_service)
 
-#agregarNuevasFilas(objeto['id'], objeto['name'], rows_to_add)
+filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'Juan', cliente) #Esto da el numero de las filas del excel
 
-filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'ASD')
+#print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas, cliente))
+
+eliminarFilas(objeto['id'], objeto['name'], filas, 0, cliente)
 
 #eliminarFilas(objeto['id'], objeto['name'], filas, 0)
 
-if len(filas) > 1:
-    print('pedir que valor eliminar dentro del flujo')
-    print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas))
-elif len(filas) == 1:
-    print('Eliminar el unico valor')
-    print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas))
-else:
-    print('No existe niuna vaina')
-    print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas))
+#if len(filas) > 1:
+    #print('pedir que valor eliminar dentro del flujo')
+    #print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas))
+#elif len(filas) == 1:
+    #print('Eliminar el unico valor')
+    #print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas))
+#else:
+    #print('No existe niuna vaina')
+    #print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas))
