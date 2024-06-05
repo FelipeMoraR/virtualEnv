@@ -12,7 +12,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 
-
+print("credenciales =>", credencialesJson)
 
 def conexionDriveBuildService():
     scope = ['https://www.googleapis.com/auth/spreadsheets',
