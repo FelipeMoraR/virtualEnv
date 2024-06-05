@@ -14,19 +14,41 @@ from googleapiclient.discovery import build
 
 
 
-
-
-scope = ['https://www.googleapis.com/auth/spreadsheets',
+def conexionDriveBuildService():
+    scope = ['https://www.googleapis.com/auth/spreadsheets',
          'https://www.googleapis.com/auth/drive']
 
-credenciales = ServiceAccountCredentials.from_json_keyfile_dict(credencialesJson, scope) #lee el archivo json con las credenciales y su scope (alcance)
-#from_json_keyfile_dict estamos pidiendo un json en formato de diccionario (dictionary) anteriormente estaba con name pues llamabamos un archivo
-cliente = gspread.authorize(credenciales) #Damos autorizacion para poder acceder a las funciones de la api.
+    try:
+        credenciales = ServiceAccountCredentials.from_json_keyfile_dict(credencialesJson, scope) #lee el archivo json con las credenciales y su scope (alcance)
+        #from_json_keyfile_dict estamos pidiendo un json en formato de diccionario (dictionary) anteriormente estaba con name pues llamabamos un archivo
+
+        # Crear un servicio de Google Drive
+        drive_service = build('drive', 'v3', credentials=credenciales)
+        
+        print('Se ha realizado la conexion al servicio')
+
+        return drive_service
+    except Exception as e:
+        print(f"ocurrió un error: {e}")
 
 
+def conexionDriveCliente():
+    scope = ['https://www.googleapis.com/auth/spreadsheets',
+         'https://www.googleapis.com/auth/drive']
 
-# Crear un servicio de Google Drive
-drive_service = build('drive', 'v3', credentials=credenciales)
+    try:
+        credenciales = ServiceAccountCredentials.from_json_keyfile_dict(credencialesJson, scope) #lee el archivo json con las credenciales y su scope (alcance)
+        #from_json_keyfile_dict estamos pidiendo un json en formato de diccionario (dictionary) anteriormente estaba con name pues llamabamos un archivo
+        cliente = gspread.authorize(credenciales) #Damos autorizacion para poder acceder a las funciones de la api.
+
+        print('Se ha realizado la conexion al cliente')
+
+        return cliente
+    except Exception as e:
+        print(f"ocurrió un error: {e}")    
+
+drive_service = conexionDriveBuildService()
+cliente = conexionDriveCliente()
 
 def agregarFilasDefault(excel_id):
     rows_to_add = [

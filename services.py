@@ -2,6 +2,18 @@ import json
 import time
 import requests
 import sett
+import sys
+import os
+
+# Añadir el directorio raíz del proyecto al PYTHONPATH
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Ahora puedes importar googleSheet.py
+from googleSheet import googleSheet
+
+drive_service = googleSheet.conexionDriveBuildService()
+cliente = googleSheet.conexionDriveCliente()
+
 
 estadoUsuario = {}
 elementosGuardar = [] #Lo que se mandará a la función.
