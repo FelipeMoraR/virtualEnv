@@ -401,7 +401,7 @@ def admChatBot(text, number, messageId, name):
 
             #Aqui habría que crear el objetoExcel
             excelModificar = googleSheet.obtenerSheet(nombre_buscar_excel, drive_service)
-            print('excel a modificar => ', excelModificar)
+            
             body = '¿Que deseas realizar en el excel?'
             footer = 'AsistenteWsp'
             options = ['Eliminar un gasto', 'Agregar un gasto']
@@ -496,7 +496,7 @@ def admChatBot(text, number, messageId, name):
             estadoUsuario[number]['estado'] = 'otra_accion'
             data = formatearMensajeTexto(number, 'Agregando los elementos al excel....')
             enviarMensajeWsp(data) 
-            
+            print('excel a modificar => ', excelModificar)
             googleSheet.agregarNuevasFilas(excelModificar['id'], excelModificar['name'], elementosGuardar,cliente)
 
             elementosGuardar.clear() #Esto se limpia para una proxima inyeccion de filas.
