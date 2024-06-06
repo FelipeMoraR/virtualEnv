@@ -21,6 +21,7 @@ filaGuardar = [] #fila que tiene la finalidad de ser guardada dentro de elemento
 filasEliminar = 0
 MensajeFilasEliminar = ""
 objectoExcel = {} #obtenerSheet() hay que utilizar esta funcion dentro de #Flujo de modificar un excel
+excelModificar = {}
 
 #Reconoce el tipo de mensaje y retorna el texto(mensaje).
 def obtenerMensajeWsp(message):
@@ -221,14 +222,6 @@ def marcarVisto(messageId):
 
     return data
 
-def buscarExcel(nombreExcel):
-    if (nombreExcel == 'testexcel'):
-        return True
-    else:
-        return False
-
-
-
 
 
 
@@ -401,12 +394,13 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Apagando...')
             enviarMensajeWsp(data)
 
-        elif buscarExcel(nombre_buscar_excel):
+        elif googleSheet.verificarExistenciaSheet(nombre_buscar_excel, drive_service):
             estadoUsuario[number]['estado'] = 'modificar_excel_accion' 
             data = formatearMensajeTexto(number, 'Excel encontrado')
             enviarMensajeWsp(data)
+
             #Aqui habría que crear el objetoExcel
-            time.sleep(2)
+            excelModificar = googleSheet.obtenerSheet(nombre_excel, drive_service)
 
             body = '¿Que deseas realizar en el excel?'
             footer = 'AsistenteWsp'
@@ -501,14 +495,18 @@ def admChatBot(text, number, messageId, name):
         elif text == 'no': #IMPORTANTE !!! AQUI DEBES EJECUTAR LAS FUNCIONES PARA AGREGAR LAS FILAS DENTRO DEL EXCEL
             estadoUsuario[number]['estado'] = 'otra_accion'
             data = formatearMensajeTexto(number, 'Agregando los elementos al excel....')
-            list.append(data)
+            enviarMensajeWsp(data) 
             
+            googleSheet.agregarNuevasFilas(excelModificar['id'], excelModificar['name'], elementosGuardar,cliente)
+
             elementosGuardar.clear() #Esto se limpia para una proxima inyeccion de filas.
+            excelModificar.clear() #Esto limpia el objeto para usarlo en otro excel
+            
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
             options = ['Si', 'No']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed17', messageId)
-            list.append(listReplyData) 
+            list.append(listReplyData) #Esto es para mandar mensajes
             
         else:
             body = 'No entendi, selecciona una opcion, ¿Desea agregar otro gasto?'
