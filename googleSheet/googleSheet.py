@@ -207,13 +207,13 @@ rows_to_add = [
 ]
 
 #Descubrimos el excel 
-objeto = obtenerSheet(nombre_hoja, drive_service)
+#objeto = obtenerSheet(nombre_hoja, drive_service)
 
-filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'Juan', cliente) #Esto da el numero de las filas del excel
+#filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'Juan', cliente) #Esto da el numero de las filas del excel
 
 #print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas, cliente))
 
-eliminarFilas(objeto['id'], objeto['name'], filas, 0, cliente)
+#eliminarFilas(objeto['id'], objeto['name'], filas, 0, cliente)
 
 #eliminarFilas(objeto['id'], objeto['name'], filas, 0)
 

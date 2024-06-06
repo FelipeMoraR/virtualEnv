@@ -233,11 +233,7 @@ def verExcel(excel):
     else:
         return False
 
-def crearExcel(nombreExcel):
-    if(nombreExcel == 'excelbueno'):
-        return True
-    else:
-        return False
+
 
 
 
@@ -377,7 +373,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Apagando...')
             enviarMensajeWsp(data)
 
-        elif crearExcel(nombre_crear_excel):
+        elif googleSheet.crearExcel(nombre_crear_excel, cliente, drive_service):
             estadoUsuario[number]['estado'] = 'otra_accion' 
             data = formatearMensajeTexto(number, 'Espere un momento...')
             enviarMensajeWsp(data)
