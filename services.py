@@ -496,7 +496,8 @@ def admChatBot(text, number, messageId, name):
             estadoUsuario[number]['estado'] = 'otra_accion'
             data = formatearMensajeTexto(number, 'Agregando los elementos al excel....')
             enviarMensajeWsp(data) 
-            print('excel a modificar => ', excelModificar)
+            print('excel a modificar =>')
+            print(excelModificar)
             googleSheet.agregarNuevasFilas(excelModificar['id'], excelModificar['name'], elementosGuardar,cliente)
 
             elementosGuardar.clear() #Esto se limpia para una proxima inyeccion de filas.
