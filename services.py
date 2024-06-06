@@ -227,11 +227,6 @@ def buscarExcel(nombreExcel):
     else:
         return False
 
-def verExcel(excel):
-    if buscarExcel(excel):
-        return True
-    else:
-        return False
 
 
 
@@ -309,23 +304,17 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Apagando...')
             enviarMensajeWsp(data)
 
-        elif verExcel(nombre_excel):
+        elif googleSheet.verificarExistenciaSheet(nombre_excel, drive_service):
             estadoUsuario[number]['estado'] = 'otra_accion' 
             data = formatearMensajeTexto(number, 'El excel existe')
             enviarMensajeWsp(data)
 
-
-            time.sleep(3)
-
-            textMsg = formatearMensajeTexto(number, 'Cargando...')
-            enviarMensajeWsp(textMsg)
+            excel = googleSheet.obtenerSheet(nombre_excel, drive_service)
+            urlExcel = googleSheet.obtener_url_archivo(excel['id'], drive_service)
+            enviarMensajeWsp(urlExcel)
             
             time.sleep(3)
 
-            documento = generarDocumento(number, sett.documentUrl, 'Excel calentito', 'excelTest')
-            enviarMensajeWsp(documento)
-            
-            time.sleep(3)
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
@@ -393,12 +382,12 @@ def admChatBot(text, number, messageId, name):
 
         else:
             estadoUsuario[number]['estado'] = 'espera_opcion'
-            data = formatearMensajeTexto(number, 'Hubo un error en la creación del excel, reiniciando...')
+            data = formatearMensajeTexto(number, 'Ya existe un excel con ese nombre')
             enviarMensajeWsp(data)
 
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
-            options = ['ver un excel', 'crear un excel', 'Modificar un excel']
+            options = ['Ver un excel', 'Crear un excel', 'Modificar un excel']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed5', messageId)
            
             list.append(listReplyData)

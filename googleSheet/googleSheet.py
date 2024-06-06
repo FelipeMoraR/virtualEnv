@@ -193,21 +193,40 @@ def identificarValoresFilasEliminar(excel_id, hoja_trabajo ,contenido_celda, cli
         print(f"ocurrió un error: {e}")
  
 
+def obtener_url_archivo(id_excel, drive_service):
+    try:
+        # Obtener la información del archivo
+        archivo = drive_service.files().get(fileId=id_excel, fields='webViewLink').execute()
+
+        # Extraer la URL del archivo
+        url_archivo = archivo.get('webViewLink')
+
+        return url_archivo
+
+    except Exception as e:
+        print(f"Ocurrió un error al obtener la URL del archivo: {e}")
+        return None
+
+
 # Conexion
-drive_service = conexionDriveBuildService()
-cliente = conexionDriveCliente()
+#drive_service = conexionDriveBuildService()
+#cliente = conexionDriveCliente()
 
 # Verificar si existe una hoja de cálculo con un nombre específico
-nombre_hoja = "algonuevoExcelGood23"
+#nombre_hoja = "pedrito"
 
 
-rows_to_add = [
-    ['Juan', 'Perez', '30'],
-    ['Ana', 'Gomez', '25']
-]
+#rows_to_add = [
+    #['Juan', 'Perez', '30'],
+    #['Ana', 'Gomez', '25']
+#]
 
 #Descubrimos el excel 
 #objeto = obtenerSheet(nombre_hoja, drive_service)
+#print(obtener_url_archivo(objeto['id'], drive_service))
+
+
+
 
 #filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'Juan', cliente) #Esto da el numero de las filas del excel
 
