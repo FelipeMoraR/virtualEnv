@@ -400,8 +400,8 @@ def admChatBot(text, number, messageId, name):
             enviarMensajeWsp(data)
 
             #Aqui habría que crear el objetoExcel
-            excelModificar = googleSheet.obtenerSheet(nombre_excel, drive_service)
-
+            excelModificar = googleSheet.obtenerSheet(nombre_buscar_excel, drive_service)
+            print('excel a modificar => ', excelModificar)
             body = '¿Que deseas realizar en el excel?'
             footer = 'AsistenteWsp'
             options = ['Eliminar un gasto', 'Agregar un gasto']
@@ -501,7 +501,7 @@ def admChatBot(text, number, messageId, name):
 
             elementosGuardar.clear() #Esto se limpia para una proxima inyeccion de filas.
             excelModificar.clear() #Esto limpia el objeto para usarlo en otro excel
-            
+
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
             options = ['Si', 'No']
