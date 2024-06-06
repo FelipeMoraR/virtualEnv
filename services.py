@@ -229,7 +229,8 @@ def marcarVisto(messageId):
 def admChatBot(text, number, messageId, name):
     text = text.lower()
     list = []
-
+    global excelModificar
+    
     if number not in estadoUsuario:
         estadoUsuario[number] = {'estado': 'inicio'}
 
