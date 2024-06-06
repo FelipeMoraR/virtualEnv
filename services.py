@@ -311,7 +311,8 @@ def admChatBot(text, number, messageId, name):
 
             excel = googleSheet.obtenerSheet(nombre_excel, drive_service)
             urlExcel = googleSheet.obtener_url_archivo(excel['id'], drive_service)
-            enviarMensajeWsp(urlExcel)
+            msjUrl = formatearMensajeTexto(number, urlExcel)
+            enviarMensajeWsp(msjUrl)
             
             time.sleep(3)
 
