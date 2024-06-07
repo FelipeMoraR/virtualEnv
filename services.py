@@ -51,8 +51,9 @@ def enviarMensajeWsp(data):
         wsp_url = sett.wspUrl
         headers = {'Content-Type': 'application/json',
                    'Authorization': 'Bearer ' + wsp_token}
-        print('se manda =>', data )
         response = requests.post(wsp_url, headers = headers, data = data)
+        print('se manda =>', data )
+        print('status =>', response.status_code)
         if response.status_code == 200:
             return 'mensaje enviado', 200
         else:
