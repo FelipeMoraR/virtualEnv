@@ -457,7 +457,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Eliminando fila...')
             enviarMensajeWsp(data)
 
-            googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, 0, cliente)
+            googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, cliente)
             estadoUsuario[number]['estado'] = 'otra_accion' 
         else:
             
