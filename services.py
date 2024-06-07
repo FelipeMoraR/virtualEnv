@@ -223,6 +223,12 @@ def marcarVisto(messageId):
     return data
 
 
+def transformarStringToInt(text):
+    try:
+        numero = int(text)
+        return numero >= 0
+    except ValueError:
+        return False
 
 
 #Control del flujo del bot
@@ -483,10 +489,12 @@ def admChatBot(text, number, messageId, name):
             estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_volver_intentar' 
      
     elif estado == 'modificar_excel_eliminar_listado_gastos':
-        if isinstance(text, int):
-            data = formatearMensajeTexto(number, f'Eliminando la posicion {text}')
+
+        if transformarStringToInt(text):
+            text_num = int(text)
+            data = formatearMensajeTexto(number, f'Eliminando la posicion {text_num}')
             enviarMensajeWsp(data)
-            googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, text, cliente)
+            googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, text_num, cliente)
             
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
@@ -498,7 +506,7 @@ def admChatBot(text, number, messageId, name):
             estadoUsuario[number]['estado'] = 'otra_accion'
         else:
             estadoUsuario[number]['estado'] = 'inicio'
-            msj2 = formatearMensajeTexto(number, 'El valor ingresado no corresponde a una posicion')
+            msj2 = formatearMensajeTexto(number, 'El valor ingresado no corresponde a una posicion, ingrese el numero de nuevo.')
             enviarMensajeWsp(msj2)
 
     elif estado == 'modificar_excel_eliminar_volver_intentar':
