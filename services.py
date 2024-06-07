@@ -456,16 +456,31 @@ def admChatBot(text, number, messageId, name):
         elif len(filasEliminar) == 1:
             data = formatearMensajeTexto(number, 'Eliminando fila...')
             enviarMensajeWsp(data)
+            print('valores =>')
+            print(excelModificar['id'])
+            print(excelModificar['name'])
+            print(filasEliminar)
+            googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, 0, cliente)
 
-            googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, cliente)
+            body = '¿Necesita otra cosa mas?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed18', messageId)
+            list.append(listReplyData) #Esto es para mandar mensajes
+
+
             estadoUsuario[number]['estado'] = 'otra_accion' 
         else:
             
             data = formatearMensajeTexto(number, 'No existe el valor')
             enviarMensajeWsp(data)
 
-            msj2 = formatearMensajeTexto(number, '¿Desea volver a intentar?')
-            enviarMensajeWsp(msj2)
+            body = '¿Quieres volver a intentar eliminar un gasto?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed7', messageId)
+            list.append(listReplyData)
+
             estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_volver_intentar' 
 
     elif estado == 'modificar_excel_eliminar_volver_intentar':
