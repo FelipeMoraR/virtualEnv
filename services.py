@@ -452,15 +452,14 @@ def admChatBot(text, number, messageId, name):
             MensajeFilasEliminar = googleSheet.formateoValoresPorEliminar(excelModificar['id'], excelModificar['name'], filasEliminar, cliente)
             data = formatearMensajeTexto(number, MensajeFilasEliminar)
             enviarMensajeWsp(data)
-            estadoUsuario[number]['estado'] = 'AQUI HAY QUE PONER QUE SELECCIONE UNA OPCION' #RECORDAR AQUI PONR UN ESTADO PARA QUE EL USUARIO SELECCIONE UNA OPCION
+
+            msj2 = formatearMensajeTexto(number, 'Seleccione una opcion mediante el numero de su posicion')
+            enviarMensajeWsp(msj2)
+            estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_listado_gastos' #RECORDAR AQUI PONR UN ESTADO PARA QUE EL USUARIO SELECCIONE UNA OPCION
         elif len(filasEliminar) == 1:
             data = formatearMensajeTexto(number, 'Eliminando fila...')
             enviarMensajeWsp(data)
-            print('valores =>')
-            print(excelModificar['id'])
-            print(excelModificar['name'])
-            print(filasEliminar)
-            googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, 0, cliente)
+            googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, 0, cliente) #Esto ya funciona
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
@@ -482,6 +481,25 @@ def admChatBot(text, number, messageId, name):
             list.append(listReplyData)
 
             estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_volver_intentar' 
+     
+    elif estado == 'modificar_excel_eliminar_listado_gastos':
+        if isinstance(text, int):
+            data = formatearMensajeTexto(number, f'Eliminando la posicion {text}')
+            enviarMensajeWsp(data)
+            googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, text, cliente)
+            
+            body = '¿Necesita otra cosa mas?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed18', messageId)
+            list.append(listReplyData) #Esto es para mandar mensajes
+
+
+            estadoUsuario[number]['estado'] = 'otra_accion'
+        else:
+            estadoUsuario[number]['estado'] = 'inicio'
+            msj2 = formatearMensajeTexto(number, 'El valor ingresado no corresponde a una posicion')
+            enviarMensajeWsp(msj2)
 
     elif estado == 'modificar_excel_eliminar_volver_intentar':
         if text == 'si':
