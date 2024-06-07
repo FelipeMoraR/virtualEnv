@@ -230,7 +230,8 @@ def admChatBot(text, number, messageId, name):
     text = text.lower()
     list = []
     global excelModificar
-    
+    global filasEliminar 
+
     if number not in estadoUsuario:
         estadoUsuario[number] = {'estado': 'inicio'}
 
@@ -440,24 +441,53 @@ def admChatBot(text, number, messageId, name):
             options = ['Eliminar un gasto', 'Agregar un gasto']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed14', messageId)
            
-            list.append(listReplyData) 
-
+            list.append(listReplyData)
+             
+    #Flujo eliminar un gasto
     elif estado == 'modificar_excel_eliminar_nombre_gasto':
-        estadoUsuario[number]['estado'] = 'inicio' #Aqui en teoria irian las funciones para eliminar un elemento de un excel en especifico
-        #filasEliminar = identificarValoresFilasEliminar(objectoExcel['id'], objectoExcel['name'], text) Con esto vamos a traer las filas 
+        nombreGasto = text
+        filasEliminar = googleSheet.identificarValoresFilasEliminar(excelModificar['id'], excelModificar['name'], nombreGasto, cliente) #Esto trae las filas de lo buscado
 
-        #if len(filasEliminar) > 1:
-            #print('pedir que valor eliminar dentro del flujo')
-            #MensajeFilasEliminar = formateoValoresPorEliminar(objectoExcel['id'], objectoExcel['name'], filasEliminar)
-            #data = formatearMensajeTexto(number, MensajeFilasEliminar)
-            #enviarMensajeWsp(data)
-        #elif len(filasEliminar) == 1:
-            #print('Eliminar el unico valor')
-            #eliminarFilas(objeto['id'], objectoExcel['name'], filas, 0)
-        #else:
-            #print('No existe niuna vaina')
-            #data = formatearMensajeTexto(number, 'No existe el valor')
-            #enviarMensajeWsp(data)
+        if len(filasEliminar) > 1:
+            MensajeFilasEliminar = googleSheet.formateoValoresPorEliminar(excelModificar['id'], excelModificar['name'], filasEliminar, cliente)
+            data = formatearMensajeTexto(number, MensajeFilasEliminar)
+            enviarMensajeWsp(data)
+            estadoUsuario[number]['estado'] = 'AQUI HAY QUE PONER QUE SELECCIONE UNA OPCION' #RECORDAR AQUI PONR UN ESTADO PARA QUE EL USUARIO SELECCIONE UNA OPCION
+        elif len(filasEliminar) == 1:
+            data = formatearMensajeTexto(number, 'Eliminando fila...')
+            enviarMensajeWsp(data)
+
+            googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, 0, cliente)
+            estadoUsuario[number]['estado'] = 'otra_accion' 
+        else:
+            
+            data = formatearMensajeTexto(number, 'No existe el valor')
+            enviarMensajeWsp(data)
+
+            msj2 = formatearMensajeTexto(number, '¿Desea volver a intentar?')
+            enviarMensajeWsp(msj2)
+            estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_volver_intentar' 
+
+    elif estado == 'modificar_excel_eliminar_volver_intentar':
+        if text == 'si':
+            estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_nombre_gasto'
+            data = formatearMensajeTexto(number, 'Ingrese el nombre del gasto a eliminar')
+            list.append(data)
+
+        elif text == 'no':
+            filasEliminar = 0 #Limpiamos
+            estadoUsuario[number]['estado'] = 'inicio'
+            data = formatearMensajeTexto(number, 'Chau me voy a dormir, gil.')
+            list.append(data)
+        else:
+            data = formatearMensajeTexto(number, 'Mensaje erroneo')
+            list.append(data)
+
+            body = '¿Quieres volver a intentar eliminar un gasto?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed7', messageId)
+            list.append(listReplyData)
 
     #Flujo modificar excel pero el camino de agregar un gasto
     elif estado == 'modificar_excel_agregar_nombre_gasto':
@@ -497,8 +527,7 @@ def admChatBot(text, number, messageId, name):
             estadoUsuario[number]['estado'] = 'otra_accion'
             data = formatearMensajeTexto(number, 'Agregando los elementos al excel....')
             enviarMensajeWsp(data) 
-            print('excel a modificar =>')
-            print(excelModificar)
+            
             googleSheet.agregarNuevasFilas(excelModificar['id'], excelModificar['name'], elementosGuardar,cliente)
 
             elementosGuardar.clear() #Esto se limpia para una proxima inyeccion de filas.

@@ -227,7 +227,7 @@ def obtener_url_archivo(id_excel, drive_service):
 
 
 
-
+#IMPORTANTE PARA ELIMINAR DEBES EJECUTAR ESTA FUNCION QUE MUESTRA LA POSICION DE LOS ELEMENTOS QUE QUIERES ELIMINAR
 #filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'Juan', cliente) #Esto da el numero de las filas del excel
 
 #print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas, cliente))
