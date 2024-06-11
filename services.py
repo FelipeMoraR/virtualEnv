@@ -300,7 +300,7 @@ def admChatBot(text, number, messageId, name):
             
             
     
-    #Defino que el flujo es ver un excel
+    #Flujo ver excel
     elif estado == 'ver_excel_pedir_nombre':
         nombre_excel = text
         if text == 'salir':
@@ -308,12 +308,12 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Apagando...')
             enviarMensajeWsp(data)
 
-        elif googleSheet.verificarExistenciaSheet(nombre_excel, drive_service):
+        elif googleSheet.verificarExistenciaExcel(nombre_excel, drive_service):
             estadoUsuario[number]['estado'] = 'otra_accion' 
             data = formatearMensajeTexto(number, 'El excel existe')
             enviarMensajeWsp(data)
 
-            excel = googleSheet.obtenerSheet(nombre_excel, drive_service)
+            excel = googleSheet.obtenerExcel(nombre_excel, drive_service)
             urlExcel = googleSheet.obtener_url_archivo(excel['id'], drive_service)
             msjUrl = formatearMensajeTexto(number, urlExcel)
             enviarMensajeWsp(msjUrl)
@@ -405,13 +405,13 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Apagando...')
             enviarMensajeWsp(data)
 
-        elif googleSheet.verificarExistenciaSheet(nombre_buscar_excel, drive_service):
-            estadoUsuario[number]['estado'] = 'modificar_excel_accion' 
+        elif googleSheet.verificarExistenciaExcel(nombre_buscar_excel, drive_service):
+            estadoUsuario[number]['estado'] = 'modificar_excel_elegir_accion' 
             data = formatearMensajeTexto(number, 'Excel encontrado')
             enviarMensajeWsp(data)
 
             #Aqui habría que crear el objetoExcel
-            excelModificar = googleSheet.obtenerSheet(nombre_buscar_excel, drive_service)
+            excelModificar = googleSheet.obtenerExcel(nombre_buscar_excel, drive_service)
             
             body = '¿Que deseas realizar en el excel?'
             footer = 'AsistenteWsp'
@@ -430,14 +430,14 @@ def admChatBot(text, number, messageId, name):
             list.append(listReplyData) 
     
     #Flujo modificar un excel, eleccion de funcion 
-    elif estado == 'modificar_excel_accion':
+    elif estado == 'modificar_excel_elegir_accion':
 
         if text == 'salir':
             estadoUsuario[number]['estado'] = 'inicio' 
             data = formatearMensajeTexto(number, 'Apagando...')
             enviarMensajeWsp(data)
         elif 'eliminar un gasto' in text:
-            estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_nombre_gasto'
+            estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_nombre_gasto' #AQUI DEBERIA PEDIR EL NOMBRE DE LA HIJO DE CALCULO
             data = formatearMensajeTexto(number, 'Ingrese el nombre a eliminar.')
             list.append(data)
         elif 'agregar un gasto' in text:
@@ -558,7 +558,7 @@ def admChatBot(text, number, messageId, name):
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed7', messageId)
             list.append(listReplyData)
 
-    #Flujo modificar excel pero el camino de agregar un gasto
+    #Flujo AGREGAR GASTO
     elif estado == 'modificar_excel_agregar_nombre_gasto':
         
         filaGuardar.append(text)

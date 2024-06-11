@@ -13,6 +13,24 @@ from googleapiclient.discovery import build
 
 
 
+def conexionSheetBuildService():
+    scope = ['https://www.googleapis.com/auth/spreadsheets',
+         'https://www.googleapis.com/auth/drive']
+
+    try:
+        credenciales = ServiceAccountCredentials.from_json_keyfile_dict(credencialesJson, scope) #lee el archivo json con las credenciales y su scope (alcance)
+        #from_json_keyfile_dict estamos pidiendo un json en formato de diccionario (dictionary) anteriormente estaba con name pues llamabamos un archivo
+
+        # Crear un servicio de Google Drive
+        sheet_service = build('sheets', 'v4', credentials=credenciales)
+        
+        print('Se ha realizado la conexion al servicio de google sheet')
+
+        return sheet_service
+    except Exception as e:
+        print(f"ocurrió un error: {e}")
+
+
 def conexionDriveBuildService():
     scope = ['https://www.googleapis.com/auth/spreadsheets',
          'https://www.googleapis.com/auth/drive']
@@ -71,7 +89,7 @@ def agregarNuevasFilas(excel_id, hoja_trabajo_nombre, filas, cliente):
     except Exception as e:
         print(f"ocurrió un error: {e}")
 
-def obtenerSheet(nombre_excel, drive_service): #Con esta funcion puedes obtener la id de un excel para utilizarla en otras funciones
+def obtenerExcel(nombre_excel, drive_service): #Con esta funcion puedes obtener la id de un excel para utilizarla en otras funciones
     try:
         query = f"name = '{nombre_excel}' and mimeType = 'application/vnd.google-apps.spreadsheet'" # mimeType es simplemente para definir que tipo de documento/archivo es, puedes poner imagenes, audios, words, etc.
         resultado = drive_service.files().list(q=query, fields="files(id, name)").execute()
@@ -86,7 +104,7 @@ def obtenerSheet(nombre_excel, drive_service): #Con esta funcion puedes obtener 
     except Exception as e:
         print(f"ocurrió un error: {e}")
 
-def verificarExistenciaSheet(nombre_excel, drive_service):
+def verificarExistenciaExcel(nombre_excel, drive_service):
     try:
         query = f"name = '{nombre_excel}' and mimeType = 'application/vnd.google-apps.spreadsheet'" # mimeType es simplemente para definir que tipo de documento/archivo es, puedes poner imagenes, audios, words, etc.
         resultado = drive_service.files().list(q=query, fields="files(id, name)").execute()
@@ -100,17 +118,33 @@ def verificarExistenciaSheet(nombre_excel, drive_service):
     except Exception as e:
         print(f"ocurrió un error: {e}")
 
+def obtenerHojaCalculo(excel_id, nombre_hoja, sheets_service):
+    try:
+        hojas_resultado = sheets_service.spreadsheets().get(spreadsheetId=excel_id).execute()
+        hojas = hojas_resultado.get('sheets', [])
+
+        for hoja in hojas:
+            if hoja['properties']['title'] == nombre_hoja:
+                return hoja['properties']['title']
+        
+        print(f"No se encontró una hoja con el nombre '{nombre_hoja}'.")
+        return None
+
+    except Exception as e:
+        print(f'Ocurrió un error: {e}')
+        return None
+    
 
 def crearExcel(nombre_excel, cliente, drive_service):
     try:
-        if verificarExistenciaSheet(nombre_excel, drive_service):
+        if verificarExistenciaExcel(nombre_excel, drive_service):
             print('El excel ya existe, porfavor ingresa otro nombre')
             return False
         else:
             print('Creando excel')
             excelCreado = cliente.create(nombre_excel)
             compartiExcel(excelCreado)
-            nuevoExcel = obtenerSheet(nombre_excel, drive_service)
+            nuevoExcel = obtenerExcel(nombre_excel, drive_service)
             agregarFilasDefault(nuevoExcel['id'], cliente)
 
             return True
@@ -124,7 +158,7 @@ def compartiExcel(hoja_calculo):
     except Exception as e:
         print(f"ocurrió un error: {e}")
 
-def formateoValoresPorEliminar(excel_id, hoja_trabajo, filas, cliente):
+def formateoValoresPorEliminar(excel_id, hoja_trabajo_nombre, filas, cliente):
     try:
         valores_limpios = []
         mensajes  = ""
@@ -151,7 +185,7 @@ def formateoValoresPorEliminar(excel_id, hoja_trabajo, filas, cliente):
 
 
 
-def eliminarFilas(excel_id, hoja_trabajo, filas, numero_fila_eliminar, cliente):
+def eliminarFilas(excel_id, hoja_trabajo_nombre, filas, numero_fila_eliminar, cliente):
     try:
         # Abrir la hoja de cálculo por ID
         excel = cliente.open_by_key(excel_id)
@@ -175,7 +209,7 @@ def eliminarFilas(excel_id, hoja_trabajo, filas, numero_fila_eliminar, cliente):
   
 
 
-def identificarValoresFilasEliminar(excel_id, hoja_trabajo ,contenido_celda, cliente):
+def identificarValoresFilasEliminar(excel_id, hoja_trabajo_nombre ,contenido_celda, cliente):
     try:
         # Abrir la hoja de cálculo por ID
         excel = cliente.open_by_key(excel_id)
@@ -214,10 +248,13 @@ def obtener_url_archivo(id_excel, drive_service):
 
 # Conexion
 #drive_service = conexionDriveBuildService()
+#sheet_service = conexionSheetBuildService()
 #cliente = conexionDriveCliente()
 
 # Verificar si existe una hoja de cálculo con un nombre específico
-#nombre_hoja = "pedrito"
+#nombre_excel = "pedrito"
+#nombre_hoja = 'sheet1'
+
 
 
 #rows_to_add = [
@@ -226,7 +263,8 @@ def obtener_url_archivo(id_excel, drive_service):
 #]
 
 #Descubrimos el excel 
-#objeto = obtenerSheet(nombre_hoja, drive_service)
+#objeto = obtenerExcel(nombre_excel, drive_service)
+#print(obtenerHojaCalculo(objeto['id'], nombre_hoja, sheet_service))
 #print(obtener_url_archivo(objeto['id'], drive_service))
 
 
