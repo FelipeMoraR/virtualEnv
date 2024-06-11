@@ -165,9 +165,13 @@ def eliminarFilas(excel_id, hoja_trabajo, filas, numero_fila_eliminar, cliente):
             hoja_calculo.delete_rows(filas[0])
         else:
             print('No existen valores en la lista') 
-
+            return False
+        
+        return True
+    
     except Exception as e:
         print(f"ocurrió un error: {e}")
+        return False
   
 
 
