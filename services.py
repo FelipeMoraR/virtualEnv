@@ -513,7 +513,7 @@ def admChatBot(text, number, messageId, name):
             else: 
                 estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_volver_intentar'
 
-                data3 = formatearMensajeTexto(number, 'Valor ingresado invalod')
+                data3 = formatearMensajeTexto(number, 'Valor ingresado fuera del rango')
                 enviarMensajeWsp(data3)
 
                 body = '¿Quieres volver a intentar eliminar un gasto?'
@@ -541,9 +541,13 @@ def admChatBot(text, number, messageId, name):
 
         elif text == 'no':
             filasEliminar = 0 #Limpiamos
-            estadoUsuario[number]['estado'] = 'inicio'
-            data = formatearMensajeTexto(number, 'Chau me voy a dormir, gil.')
-            list.append(data)
+            estadoUsuario[number]['estado'] = 'otra_accion'
+
+            body = '¿Necesita otra cosa mas?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed24', messageId)
+            list.append(listReplyData) #Esto es para mandar mensajes
         else:
             data = formatearMensajeTexto(number, 'Mensaje erroneo')
             list.append(data)
