@@ -52,9 +52,11 @@ def enviarMensajeWsp(data):
         headers = {'Content-Type': 'application/json',
                    'Authorization': 'Bearer ' + wsp_token}
         response = requests.post(wsp_url, headers = headers, data = data)
-        print('se manda =>', data )
-        print('status =>', response.status_code)
+        
+        print('status =>', response.status_code, response)
+        
         if response.status_code == 200:
+            print('se manda =>', data )
             return 'mensaje enviado', 200
         else:
             return 'error al enviar mensaje', response.status_code
@@ -497,18 +499,25 @@ def admChatBot(text, number, messageId, name):
             enviarMensajeWsp(data)
             googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, text_num, cliente)
             
-            body = '¿Necesita otra cosa mas?'
+            body = '¿Necesita eliminar otro gasto?'
             footer = 'AsistenteWsp'
             options = ['Si', 'No']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed18', messageId)
             list.append(listReplyData) #Esto es para mandar mensajes
 
+            estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_volver_intentar'
 
-            estadoUsuario[number]['estado'] = 'otra_accion'
         else:
-            estadoUsuario[number]['estado'] = 'inicio'
-            msj2 = formatearMensajeTexto(number, 'El valor ingresado no corresponde a una posicion, ingrese el numero de nuevo.')
-            enviarMensajeWsp(msj2)
+            estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_volver_intentar'
+
+            data = formatearMensajeTexto(number, 'Valor ingresado invalido')
+            enviarMensajeWsp(data)
+
+            body = '¿Quieres volver a intentar eliminar un gasto?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed20', messageId)
+            list.append(listReplyData)
 
     elif estado == 'modificar_excel_eliminar_volver_intentar':
         if text == 'si':
