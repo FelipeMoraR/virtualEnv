@@ -56,7 +56,7 @@ def enviarMensajeWsp(data):
         
         print('status =>', response.status_code)
         print('status =>', response.text)
-        
+
         if response.status_code == 200:
             print('se manda =>', data )
             return 'mensaje enviado', 200
@@ -272,6 +272,7 @@ def admChatBot(text, number, messageId, name):
             estadoUsuario[number]['estado'] = 'inicio' 
             data = formatearMensajeTexto(number, 'Apagando...')
             enviarMensajeWsp(data)
+            
         
         elif 'ver un excel' in text:
             estadoUsuario[number]['estado'] = 'ver_excel_pedir_nombre'
@@ -546,6 +547,8 @@ def admChatBot(text, number, messageId, name):
 
             data2 = formatearMensajeTexto(number, 'Fila eliminada')
             enviarMensajeWsp(data2)
+
+            time.sleep(1)
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
