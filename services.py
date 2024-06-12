@@ -480,6 +480,8 @@ def admChatBot(text, number, messageId, name):
             hojaModificar.clear() #Limpiamos
             estadoUsuario[number]['estado'] = 'otra_accion'
 
+            print('ESTADO DE LA HOJA LUEGO DE UN NO => ', hojaModificar)
+
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
             options = ['Si', 'No']
@@ -498,7 +500,7 @@ def admChatBot(text, number, messageId, name):
 
     #Flujo modificar un excel, eleccion de funcion 
     elif estado == 'modificar_excel_elegir_accion':
-        print('hoja pero en otro if => ', hojaModificar)
+        
         if text == 'salir':
             estadoUsuario[number]['estado'] = 'inicio' 
             data = formatearMensajeTexto(number, 'Apagando...')
@@ -522,10 +524,10 @@ def admChatBot(text, number, messageId, name):
     #Flujo eliminar un gasto
     elif estado == 'modificar_excel_eliminar_nombre_gasto':
         nombreGasto = text
-        filasEliminar = googleSheet.identificarValoresFilasEliminar(excelModificar['id'], excelModificar['name'], nombreGasto, cliente) #Esto trae las filas de lo buscado
+        filasEliminar = googleSheet.identificarValoresFilasEliminar(excelModificar['id'], hojaModificar, nombreGasto, cliente) #Esto trae las filas de lo buscado
 
         if len(filasEliminar) > 1:
-            MensajeFilasEliminar = googleSheet.formateoValoresPorEliminar(excelModificar['id'], excelModificar['name'], filasEliminar, cliente)
+            MensajeFilasEliminar = googleSheet.formateoValoresPorEliminar(excelModificar['id'], hojaModificar, filasEliminar, cliente)
             data = formatearMensajeTexto(number, MensajeFilasEliminar)
             enviarMensajeWsp(data)
 
@@ -537,7 +539,7 @@ def admChatBot(text, number, messageId, name):
         elif len(filasEliminar) == 1:
             data = formatearMensajeTexto(number, 'Eliminando fila...')
             enviarMensajeWsp(data)
-            googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, 0, cliente) #Esto ya funciona
+            googleSheet.eliminarFilas(excelModificar['id'], hojaModificar, filasEliminar, 0, cliente) #Esto ya funciona
 
             time.sleep(1)             
 
@@ -571,7 +573,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, f'Intenando eliminar la posicion {text_num}')
             enviarMensajeWsp(data)
 
-            estadoEliminar = googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, text_num, cliente)
+            estadoEliminar = googleSheet.eliminarFilas(excelModificar['id'], hojaModificar, filasEliminar, text_num, cliente)
             
             time.sleep(1)
 
@@ -681,7 +683,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Agregando los elementos al excel....')
             enviarMensajeWsp(data) 
             
-            googleSheet.agregarNuevasFilas(excelModificar['id'], excelModificar['name'], elementosGuardar,cliente)
+            googleSheet.agregarNuevasFilas(excelModificar['id'], hojaModificar, elementosGuardar,cliente)
 
             elementosGuardar.clear() #Esto se limpia para una proxima inyeccion de filas.
             excelModificar.clear() #Esto limpia el objeto para usarlo en otro excel

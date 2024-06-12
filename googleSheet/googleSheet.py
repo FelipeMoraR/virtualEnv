@@ -81,8 +81,8 @@ def agregarNuevasFilas(excel_id, hoja_trabajo_nombre, filas, cliente):
         excel = cliente.open_by_key(excel_id)
 
         # Seleccionar la hoja de trabajo por nombre, por ahora solo agrega en la primera hoja de trabajo
-        hojaCalculo = excel.get_worksheet(0)
-
+        hojaCalculo = excel.worksheet(hoja_trabajo_nombre)
+       
         # Agregar filas una debajo de otra
         hojaCalculo.append_rows(filas)
         print(f"{len(filas)} filas agregadas en la hoja de cálculo {excel_id}.")
@@ -196,7 +196,7 @@ def formateoValoresPorEliminar(excel_id, hoja_trabajo_nombre, filas, cliente):
         excel = cliente.open_by_key(excel_id)
        
         # Seleccionar la hoja de trabajo por nombre, por ahora solo agrega en la primera hoja de trabajo
-        hoja_calculo = excel.get_worksheet(0)
+        hoja_calculo = excel.worksheet(hoja_trabajo_nombre)
        
         for fila in filas:
             valores_fila = hoja_calculo.row_values(fila)
@@ -220,7 +220,7 @@ def eliminarFilas(excel_id, hoja_trabajo_nombre, filas, numero_fila_eliminar, cl
         excel = cliente.open_by_key(excel_id)
        
         # Seleccionar la hoja de trabajo por nombre, por ahora solo agrega en la primera hoja de trabajo
-        hoja_calculo = excel.get_worksheet(0)
+        hoja_calculo = excel.worksheet(hoja_trabajo_nombre)
 
         if len(filas) > 1:
             hoja_calculo.delete_rows(filas[numero_fila_eliminar])
@@ -244,7 +244,7 @@ def identificarValoresFilasEliminar(excel_id, hoja_trabajo_nombre ,contenido_cel
         excel = cliente.open_by_key(excel_id)
        
         # Seleccionar la hoja de trabajo por nombre, por ahora solo agrega en la primera hoja de trabajo
-        hoja_calculo = excel.get_worksheet(0)
+        hoja_calculo = excel.worksheet(hoja_trabajo_nombre)
        
         #Encontrar todas las celdas
         lista_celdas = hoja_calculo.findall(contenido_celda)
