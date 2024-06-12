@@ -133,9 +133,38 @@ def obtenerHojaCalculo(excel_id, nombre_hoja, sheets_service):
     except Exception as e:
         print(f'Ocurrió un error: {e}')
         return None
-    
 
-def crearExcel(nombre_excel, cliente, drive_service):
+
+
+def cambiarNombreHoja(excel_id, nombre_hoja, sheets_service):
+    try:
+        # Obtener la hoja de cálculo
+        hoja_calculo = sheets_service.spreadsheets().get(spreadsheetId=excel_id).execute()
+        hoja = hoja_calculo['sheets'][0]
+        hoja_id = hoja['properties']['sheetId']
+        
+        # Cambiar el nombre de la hoja
+        solicitud = {
+            'requests': [
+                {
+                    'updateSheetProperties': {
+                        'properties': {
+                            'sheetId': hoja_id,
+                            'title': nombre_hoja
+                        },
+                        'fields': 'title'
+                    }
+                }
+            ]
+        }
+        
+        sheets_service.spreadsheets().batchUpdate(spreadsheetId=excel_id, body=solicitud).execute()
+        print(f"El nombre de la hoja se cambió a '{nombre_hoja}'")
+    
+    except Exception as e:
+        print(f"ocurrió un error al cambiar el nombre de la hoja: {e}")
+
+def crearExcel(nombre_excel, cliente, drive_service, sheet_service):
     try:
         if verificarExistenciaExcel(nombre_excel, drive_service):
             print('El excel ya existe, porfavor ingresa otro nombre')
@@ -146,7 +175,7 @@ def crearExcel(nombre_excel, cliente, drive_service):
             compartiExcel(excelCreado)
             nuevoExcel = obtenerExcel(nombre_excel, drive_service)
             agregarFilasDefault(nuevoExcel['id'], cliente)
-
+            cambiarNombreHoja(nuevoExcel['id'], 'inicio', sheet_service)
             return True
     except Exception as e:
         print(f"ocurrió un error: {e}")

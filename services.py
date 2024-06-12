@@ -11,6 +11,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # Ahora puedes importar googleSheet.py
 from googleSheet import googleSheet
 
+sheet_service = googleSheet.conexionSheetBuildService()
 drive_service = googleSheet.conexionDriveBuildService()
 cliente = googleSheet.conexionDriveCliente()
 
@@ -367,7 +368,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Apagando...')
             enviarMensajeWsp(data)
 
-        elif googleSheet.crearExcel(nombre_crear_excel, cliente, drive_service):
+        elif googleSheet.crearExcel(nombre_crear_excel, cliente, drive_service, sheet_service):
             estadoUsuario[number]['estado'] = 'otra_accion' 
             data = formatearMensajeTexto(number, 'Espere un momento...')
             enviarMensajeWsp(data)
