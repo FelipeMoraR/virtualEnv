@@ -390,6 +390,8 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Ya existe un excel con ese nombre')
             enviarMensajeWsp(data)
 
+            time.sleep(1)
+
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
             options = ['Ver un excel', 'Crear un excel', 'Modificar un excel']
@@ -409,6 +411,8 @@ def admChatBot(text, number, messageId, name):
             estadoUsuario[number]['estado'] = 'modificar_excel_elegir_accion' 
             data = formatearMensajeTexto(number, 'Excel encontrado')
             enviarMensajeWsp(data)
+
+            time.sleep(1)
 
             #Aqui habría que crear el objetoExcel
             excelModificar = googleSheet.obtenerExcel(nombre_buscar_excel, drive_service)
@@ -462,6 +466,8 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, MensajeFilasEliminar)
             enviarMensajeWsp(data)
 
+            time.sleep(1)
+
             msj2 = formatearMensajeTexto(number, 'Seleccione una opcion mediante el numero de su posicion')
             enviarMensajeWsp(msj2)
             estadoUsuario[number]['estado'] = 'modificar_excel_eliminar_listado_gastos' #RECORDAR AQUI PONR UN ESTADO PARA QUE EL USUARIO SELECCIONE UNA OPCION
@@ -469,6 +475,8 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Eliminando fila...')
             enviarMensajeWsp(data)
             googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, 0, cliente) #Esto ya funciona
+
+            time.sleep(1)             
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
@@ -482,6 +490,8 @@ def admChatBot(text, number, messageId, name):
             
             data = formatearMensajeTexto(number, 'No existe el valor')
             enviarMensajeWsp(data)
+
+            time.sleep(1)
 
             body = '¿Quieres volver a intentar eliminar un gasto?'
             footer = 'AsistenteWsp'
@@ -499,9 +509,12 @@ def admChatBot(text, number, messageId, name):
             enviarMensajeWsp(data)
 
             estadoEliminar = googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, text_num, cliente)
+
             if estadoEliminar:
                 data2 = formatearMensajeTexto(number, f'Posicion {text_num} eliminada')
                 enviarMensajeWsp(data2)
+                
+                time.sleep(1)
 
                 body = '¿Necesita eliminar otro gasto?'
                 footer = 'AsistenteWsp'
@@ -516,6 +529,8 @@ def admChatBot(text, number, messageId, name):
                 data3 = formatearMensajeTexto(number, 'Valor ingresado fuera del rango')
                 enviarMensajeWsp(data3)
 
+                time.sleep(1)
+
                 body = '¿Quieres volver a intentar eliminar un gasto?'
                 footer = 'AsistenteWsp'
                 options = ['Si', 'No']
@@ -526,6 +541,8 @@ def admChatBot(text, number, messageId, name):
 
             data = formatearMensajeTexto(number, 'Valor ingresado invalido')
             enviarMensajeWsp(data)
+
+            time.sleep(1)
 
             body = '¿Quieres volver a intentar eliminar un gasto?'
             footer = 'AsistenteWsp'
@@ -577,6 +594,8 @@ def admChatBot(text, number, messageId, name):
         enviarMensajeWsp(data)
 
         print('elementos a guardar => ', elementosGuardar)
+        
+        time.sleep(1)
 
         body = '¿Desea agregar otro gasto?'
         footer = 'AsistenteWsp'
@@ -601,6 +620,8 @@ def admChatBot(text, number, messageId, name):
 
             elementosGuardar.clear() #Esto se limpia para una proxima inyeccion de filas.
             excelModificar.clear() #Esto limpia el objeto para usarlo en otro excel
+
+            time.sleep(1)
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
@@ -663,6 +684,7 @@ def admChatBot(text, number, messageId, name):
             list.append(listReplyData)
 
     for item in list:
+        time.sleep(1)
         enviarMensajeWsp(item)
 
 
