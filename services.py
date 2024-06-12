@@ -368,6 +368,12 @@ def admChatBot(text, number, messageId, name):
     #Flujo crear un excel
     elif estado == 'crear_excel':
         nombre_crear_excel = text
+
+        data = formatearMensajeTexto(number, 'Espere un momento...')
+        enviarMensajeWsp(data)
+            
+        time.sleep(1)
+
         if text == 'salir':
             estadoUsuario[number]['estado'] = 'inicio' 
             data = formatearMensajeTexto(number, 'Apagando...')
@@ -375,10 +381,7 @@ def admChatBot(text, number, messageId, name):
 
         elif googleSheet.crearExcel(nombre_crear_excel, cliente, drive_service, sheet_service):
             estadoUsuario[number]['estado'] = 'otra_accion' 
-            data = formatearMensajeTexto(number, 'Espere un momento...')
-            enviarMensajeWsp(data)
             
-            time.sleep(1)
 
             mensajeCreacion = formatearMensajeTexto(number, 'Documento se ha creado, enviando url...')
             enviarMensajeWsp(mensajeCreacion) 
