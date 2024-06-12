@@ -23,7 +23,7 @@ filasEliminar = 0
 MensajeFilasEliminar = ""
 objectoExcel = {} #obtenerSheet() hay que utilizar esta funcion dentro de #Flujo de modificar un excel
 excelModificar = {}
-
+hojaModificar = ""
 #Reconoce el tipo de mensaje y retorna el texto(mensaje).
 def obtenerMensajeWsp(message):
     if 'type' not in message:
@@ -240,6 +240,7 @@ def admChatBot(text, number, messageId, name):
     text = text.lower()
     list = []
     global excelModificar
+    global hojaModificar
     global filasEliminar 
 
     if number not in estadoUsuario:
@@ -411,7 +412,7 @@ def admChatBot(text, number, messageId, name):
             enviarMensajeWsp(data)
 
         elif googleSheet.verificarExistenciaExcel(nombre_buscar_excel, drive_service):
-            estadoUsuario[number]['estado'] = 'modificar_excel_elegir_accion' 
+            estadoUsuario[number]['estado'] = 'modificar_excel_elegir_hoja' 
             data = formatearMensajeTexto(number, 'Excel encontrado')
             enviarMensajeWsp(data)
 
@@ -420,12 +421,12 @@ def admChatBot(text, number, messageId, name):
             #Aqui habría que crear el objetoExcel
             excelModificar = googleSheet.obtenerExcel(nombre_buscar_excel, drive_service)
             
-            body = '¿Que deseas realizar en el excel?'
-            footer = 'AsistenteWsp'
-            options = ['Eliminar un gasto', 'Agregar un gasto']
-            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed13', messageId)
-           
-            list.append(listReplyData) 
+            data2 = formatearMensajeTexto(number, '¿Que hoja de trabajo quieres afectar?')
+            enviarMensajeWsp(data2)
+
+
+
+            
         else:
             estadoUsuario[number]['estado'] = 'modificar_excel_volver_intentar'
             data = formatearMensajeTexto(number, 'El excel NO existe')
@@ -435,10 +436,69 @@ def admChatBot(text, number, messageId, name):
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed6', messageId)
             list.append(data)
             list.append(listReplyData) 
-    
+
+    elif estado == 'modificar_excel_elegir_hoja':
+        if googleSheet.obtenerHojaCalculo(excelModificar['id'], text, sheet_service):
+            
+            data = formatearMensajeTexto(number, 'Hoja encontrada')
+            enviarMensajeWsp(data)
+
+            hojaModificar = googleSheet.obtenerHojaCalculo(excelModificar['id'], text, sheet_service)
+            estadoUsuario[number]['estado'] = 'modificar_excel_elegir_accion' 
+            
+            time.sleep(1)
+            
+            print('esta es la hoja => ', hojaModificar)
+            body = '¿Que deseas realizar en la hoja?'
+            footer = 'AsistenteWsp'
+            options = ['Eliminar un gasto', 'Agregar un gasto']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed13', messageId)
+           
+            list.append(listReplyData) 
+        else:
+            estadoUsuario[number]['estado'] = 'modificar_excel_volver_intentar_hoja' 
+            data = formatearMensajeTexto(number, 'Hoja NO encontrada')
+            enviarMensajeWsp(data)
+
+            time.sleep(1)
+
+            body = '¿Desea volver a intentar ingresar un nombre de una hoja?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed13', messageId)
+           
+            list.append(listReplyData) 
+
+    elif estado == 'modificar_excel_volver_intentar_hoja':
+        if text == 'si':
+            estadoUsuario[number]['estado'] = 'modificar_excel_elegir_hoja'
+            data2 = formatearMensajeTexto(number, '¿Que hoja de trabajo quieres afectar?')
+            enviarMensajeWsp(data2)
+
+        elif text == 'no':
+            excelModificar.clear() #Limpiamos
+            hojaModificar.clear() #Limpiamos
+            estadoUsuario[number]['estado'] = 'otra_accion'
+
+            body = '¿Necesita otra cosa mas?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed24', messageId)
+            list.append(listReplyData) #Esto es para mandar mensajes
+        else:
+            data = formatearMensajeTexto(number, 'Mensaje erroneo')
+            list.append(data)
+
+            body = '¿Desea volver a intentar ingresar un nombre de una hoja?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed40', messageId)
+            list.append(listReplyData)
+
+
     #Flujo modificar un excel, eleccion de funcion 
     elif estado == 'modificar_excel_elegir_accion':
-
+        print('hoja pero en otro if => ', hojaModificar)
         if text == 'salir':
             estadoUsuario[number]['estado'] = 'inicio' 
             data = formatearMensajeTexto(number, 'Apagando...')
@@ -458,7 +518,7 @@ def admChatBot(text, number, messageId, name):
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed14', messageId)
            
             list.append(listReplyData)
-             
+
     #Flujo eliminar un gasto
     elif estado == 'modificar_excel_eliminar_nombre_gasto':
         nombreGasto = text
