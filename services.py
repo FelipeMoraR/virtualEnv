@@ -294,7 +294,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'No entiendo')
             body = 'Solo entiendo estas opciones, ¿Que necesitas?'
             footer = 'AsistenteWsp'
-            options = ['ver un excel', 'crear un excel', 'Modificar un excel']
+            options = ['Ver un excel', 'Crear un excel', 'Modificar un excel']
             buttonsReplyData = generarMensajeConBotones(number, options, body, footer, 'sed2', messageId)
             list.append(data)
             list.append(buttonsReplyData)
@@ -314,12 +314,14 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'El excel existe')
             enviarMensajeWsp(data)
 
+            time.sleep(1)
+
             excel = googleSheet.obtenerExcel(nombre_excel, drive_service)
             urlExcel = googleSheet.obtener_url_archivo(excel['id'], drive_service)
             msjUrl = formatearMensajeTexto(number, urlExcel)
             enviarMensajeWsp(msjUrl)
             
-            time.sleep(3)
+            time.sleep(1)
 
 
             body = '¿Necesita otra cosa mas?'
@@ -373,12 +375,12 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Espere un momento...')
             enviarMensajeWsp(data)
             
-            time.sleep(3)
+            time.sleep(1)
 
             mensajeCreacion = formatearMensajeTexto(number, 'Documento se ha creado')
             enviarMensajeWsp(mensajeCreacion) #Esto deberia mandar la url del excel o el nomnbre del excel
 
-            time.sleep(3)
+            time.sleep(1)
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
@@ -510,6 +512,8 @@ def admChatBot(text, number, messageId, name):
             enviarMensajeWsp(data)
 
             estadoEliminar = googleSheet.eliminarFilas(excelModificar['id'], excelModificar['name'], filasEliminar, text_num, cliente)
+            
+            time.sleep(1)
 
             if estadoEliminar:
                 data2 = formatearMensajeTexto(number, f'Posicion {text_num} eliminada')
