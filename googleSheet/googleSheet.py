@@ -64,13 +64,13 @@ def conexionDriveCliente():
     except Exception as e:
         print(f"ocurrió un error: {e}")    
 
-def agregarFilasDefault(excel_id, cliente):
+def agregarFilasDefault(excel_id, hoja_trabajo_nombre, cliente):
     rows_to_add = [
         ['Nombre Gasto', 'Valor']
     ]
     excel = cliente.open_by_key(excel_id)
     
-    hojaCalculo = excel.get_worksheet(0) #Toma la primera hoja de calculo
+    hojaCalculo = excel.worksheet(hoja_trabajo_nombre)
     
     hojaCalculo.append_rows(rows_to_add)
     print(f"{len(rows_to_add)} filas agregadas en la hoja de cálculo {excel_id}.")
@@ -164,6 +164,38 @@ def cambiarNombreHoja(excel_id, nombre_hoja, sheets_service):
     except Exception as e:
         print(f"ocurrió un error al cambiar el nombre de la hoja: {e}")
 
+def crearNuevaHoja(excel_id, nombre_nueva_hoja, sheets_service, cliente):
+    try:
+        # Crear la solicitud para añadir una nueva hoja
+        solicitud = {
+            'requests': [
+                {
+                    'addSheet': {
+                        'properties': {
+                            'title': nombre_nueva_hoja
+                        }
+                    }
+                }
+            ]
+        }
+        
+        # Ejecutar la solicitud para añadir la nueva hoja
+        response = sheets_service.spreadsheets().batchUpdate(spreadsheetId=excel_id, body=solicitud).execute()
+        nueva_hoja_id = response['replies'][0]['addSheet']['properties']['sheetId']
+        
+        print(f"Se creó una nueva hoja con el nombre '{nombre_nueva_hoja}' y el ID {nueva_hoja_id}")
+
+        try:
+            agregarFilasDefault(excel_id, nombre_nueva_hoja, cliente)
+        except Exception as e: 
+            print(f'Ocurrio un error {e}')
+
+        return nueva_hoja_id
+    
+    except Exception as e:
+        print(f"Ocurrió un error al crear la nueva hoja: {e}")
+        return None
+
 def crearExcel(nombre_excel, cliente, drive_service, sheet_service):
     try:
         if verificarExistenciaExcel(nombre_excel, drive_service):
@@ -174,8 +206,8 @@ def crearExcel(nombre_excel, cliente, drive_service, sheet_service):
             excelCreado = cliente.create(nombre_excel)
             compartiExcel(excelCreado)
             nuevoExcel = obtenerExcel(nombre_excel, drive_service)
-            agregarFilasDefault(nuevoExcel['id'], cliente)
             cambiarNombreHoja(nuevoExcel['id'], 'inicio', sheet_service)
+            agregarFilasDefault(nuevoExcel['id'], 'inicio', cliente)
             return True
     except Exception as e:
         print(f"ocurrió un error: {e}")
@@ -276,12 +308,12 @@ def obtener_url_archivo(id_excel, drive_service):
 
 
 # Conexion
-#drive_service = conexionDriveBuildService()
-#sheet_service = conexionSheetBuildService()
-#cliente = conexionDriveCliente()
+drive_service = conexionDriveBuildService()
+sheet_service = conexionSheetBuildService()
+cliente = conexionDriveCliente()
 
 # Verificar si existe una hoja de cálculo con un nombre específico
-#nombre_excel = "pedrito"
+nombre_excel = "pedrito"
 #nombre_hoja = 'sheet1'
 
 
@@ -295,9 +327,9 @@ def obtener_url_archivo(id_excel, drive_service):
 #objeto = obtenerExcel(nombre_excel, drive_service)
 #print(obtenerHojaCalculo(objeto['id'], nombre_hoja, sheet_service))
 #print(obtener_url_archivo(objeto['id'], drive_service))
+#crearNuevaHoja(objeto['id'], 'sexito2', sheet_service, cliente)
 
-
-
+#crearExcel('testV4', cliente, drive_service, sheet_service)
 #IMPORTANTE PARA ELIMINAR DEBES EJECUTAR ESTA FUNCION QUE MUESTRA LA POSICION DE LOS ELEMENTOS QUE QUIERES ELIMINAR
 #filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'Juan', cliente) #Esto da el numero de las filas del excel
 
