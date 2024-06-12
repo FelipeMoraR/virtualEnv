@@ -54,8 +54,9 @@ def enviarMensajeWsp(data):
                    'Authorization': 'Bearer ' + wsp_token}
         response = requests.post(wsp_url, headers = headers, data = data)
         
-        print('status =>', response.status_code, response)
-
+        print('status =>', response.status_code)
+        print('status =>', response.text)
+        
         if response.status_code == 200:
             print('se manda =>', data )
             return 'mensaje enviado', 200
@@ -542,6 +543,9 @@ def admChatBot(text, number, messageId, name):
             googleSheet.eliminarFilas(excelModificar['id'], hojaModificar, filasEliminar, 0, cliente) #Esto ya funciona
 
             time.sleep(1)             
+
+            data2 = formatearMensajeTexto(number, 'Fila eliminada')
+            enviarMensajeWsp(data2)
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
