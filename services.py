@@ -380,10 +380,16 @@ def admChatBot(text, number, messageId, name):
             
             time.sleep(1)
 
-            mensajeCreacion = formatearMensajeTexto(number, 'Documento se ha creado')
-            enviarMensajeWsp(mensajeCreacion) #Esto deberia mandar la url del excel o el nomnbre del excel
+            mensajeCreacion = formatearMensajeTexto(number, 'Documento se ha creado, enviando url...')
+            enviarMensajeWsp(mensajeCreacion) 
 
             time.sleep(1)
+            objExcelTmp = googleSheet.obtenerExcel(nombre_crear_excel, drive_service)
+            urlExcelCreado = googleSheet.obtener_url_archivo(objExcelTmp['id'], drive_service)
+
+
+            mensajeUrl = formatearMensajeTexto(number, urlExcelCreado)
+            enviarMensajeWsp(mensajeUrl) 
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
