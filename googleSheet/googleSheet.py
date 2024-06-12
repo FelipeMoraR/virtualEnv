@@ -308,12 +308,12 @@ def obtener_url_archivo(id_excel, drive_service):
 
 
 # Conexion
-drive_service = conexionDriveBuildService()
-sheet_service = conexionSheetBuildService()
-cliente = conexionDriveCliente()
+#drive_service = conexionDriveBuildService()
+#sheet_service = conexionSheetBuildService()
+#cliente = conexionDriveCliente()
 
 # Verificar si existe una hoja de cálculo con un nombre específico
-nombre_excel = "pedrito"
+#nombre_excel = "pedrito"
 #nombre_hoja = 'sheet1'
 
 
