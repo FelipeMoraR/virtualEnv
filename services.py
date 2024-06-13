@@ -253,7 +253,7 @@ def admChatBot(text, number, messageId, name):
         if 'hola' in text:
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
-            options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
+            options = ['Ver excel', 'Crear excel', 'Modificar hoja excel', 'Agregar hoja excel']
             listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed1', messageId)
             replyReaction = reaccionarMensaje(number, messageId, '💜')
             list.append(listReplyData)
@@ -274,21 +274,21 @@ def admChatBot(text, number, messageId, name):
             enviarMensajeWsp(data)
             
         
-        elif 'ver un excel' in text:
+        elif 'ver excel' in text:
             estadoUsuario[number]['estado'] = 'ver_excel_pedir_nombre'
             textMsg = formatearMensajeTexto(number, 'Dime el nombre del excel')
             list.append(textMsg)
-        elif 'crear un excel' in text:
+        elif 'crear excel' in text:
             estadoUsuario[number]['estado'] = 'crear_excel'
             textMsg = formatearMensajeTexto(number, 'Vamos a crear un excel. ¿Cómo quieres nombrarlo?')
             list.append(textMsg)
 
-        elif 'modificar una hoja de excel' in text:
+        elif 'modificar hoja excel' in text:
             estadoUsuario[number]['estado'] = 'modificar_excel'
             textMsg = formatearMensajeTexto(number, 'Dime el nombre del excel que quieres modificar')
             list.append(textMsg)
         
-        elif 'agregar una hoja a un excel' in text:
+        elif 'agregar hoja excel' in text:
             estadoUsuario[number]['estado'] = 'crear_hoja_excel'
             textMsg = formatearMensajeTexto(number, 'Dime el nombre del excel que quieres modificar')
             list.append(textMsg)
@@ -303,7 +303,7 @@ def admChatBot(text, number, messageId, name):
             
             body = 'Solo entiendo estas opciones, ¿Que necesitas?'
             footer = 'AsistenteWsp'
-            options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
+            options = ['Ver excel', 'Crear excel', 'Modificar hoja excel', 'Agregar hoja excel']
             buttonsReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed2', messageId)
             list.append(data)
             list.append(buttonsReplyData)
@@ -415,7 +415,7 @@ def admChatBot(text, number, messageId, name):
 
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
-            options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
+            options = ['Ver excel', 'Crear excel', 'Modificar hoja excel', 'Agregar hoja excel']
             listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed5', messageId)
            
             list.append(listReplyData)
@@ -846,7 +846,7 @@ def admChatBot(text, number, messageId, name):
             estadoUsuario[number]['estado'] = 'espera_opcion'
             body = 'Hola de nuevo, ¿Qué necesitas?'
             footer = 'AsistenteWsp'
-            options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
+            options = ['Ver excel', 'Crear excel', 'Modificar hoja excel', 'Agregar hoja excel']
             listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed11', messageId)
             list.append(listReplyData)
             
