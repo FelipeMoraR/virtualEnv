@@ -810,11 +810,14 @@ def admChatBot(text, number, messageId, name):
             list.append(data)
 
         elif text == 'no':
-            estadoUsuario[number]['estado'] = 'inicio'
+            estadoUsuario[number]['estado'] = 'otra_accion'
             excelModificar.clear() #Limpiamos para evitar errores.
-            data = formatearMensajeTexto(number, 'Chau me voy a dormir, gil.')  
-
-            list.append(data)
+            
+            body = '¿Necesita otra cosa mas?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed47', messageId)
+            list.append(listReplyData) #Esto es para mandar mensajes
         else:
             data = formatearMensajeTexto(number, 'Mensaje erroneo')
             list.append(data)
