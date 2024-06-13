@@ -749,9 +749,9 @@ def admChatBot(text, number, messageId, name):
             enviarMensajeWsp(data2)
 
         else:
-            estadoUsuario[number]['estado'] = 'crear_hoja_excel_volver_intentar'
+            estadoUsuario[number]['estado'] = 'crear_hoja_volver_intentar'
             data = formatearMensajeTexto(number, 'El excel NO existe')
-            body = '¿Quieres volver a intentar crear una hoja?'
+            body = '¿Quieres volver a ingresar el excel?'
             footer = 'AsistenteWsp'
             options = ['Si', 'No']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed51', messageId)
@@ -844,6 +844,26 @@ def admChatBot(text, number, messageId, name):
             footer = 'AsistenteWsp'
             options = ['Si', 'No']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed7', messageId)
+            list.append(listReplyData)
+
+    elif estado == 'crear_hoja_volver_intentar':
+        if text == 'si':
+            estadoUsuario[number]['estado'] = 'crear_hoja_excel'
+            data = formatearMensajeTexto(number, 'Ingrese el nombre del excel')
+            list.append(data)
+
+        elif text == 'no':
+            estadoUsuario[number]['estado'] = 'inicio'
+            data = formatearMensajeTexto(number, 'Chau me voy a dormir, gil.')
+            list.append(data)
+        else:
+            data = formatearMensajeTexto(number, 'Mensaje erroneo')
+            list.append(data)
+
+            body = '¿Quieres volver a ingresar el excel?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed49', messageId)
             list.append(listReplyData)
         
     elif estado == 'otra_accion':
