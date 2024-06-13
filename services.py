@@ -323,14 +323,14 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'El excel existe')
             enviarMensajeWsp(data)
 
-            #time.sleep(1)
+            time.sleep(1)
 
             excel = googleSheet.obtenerExcel(nombre_excel, drive_service)
             urlExcel = googleSheet.obtener_url_archivo(excel['id'], drive_service)
             msjUrl = formatearMensajeTexto(number, urlExcel)
             enviarMensajeWsp(msjUrl)
             
-            #time.sleep(1)
+            time.sleep(1)
 
 
             body = '¿Necesita otra cosa mas?'
@@ -378,7 +378,7 @@ def admChatBot(text, number, messageId, name):
         data = formatearMensajeTexto(number, 'Espere un momento...')
         enviarMensajeWsp(data)
             
-        #time.sleep(1)
+        time.sleep(1)
 
         if text == 'salir':
             estadoUsuario[number]['estado'] = 'inicio' 
@@ -392,7 +392,7 @@ def admChatBot(text, number, messageId, name):
             mensajeCreacion = formatearMensajeTexto(number, 'Documento se ha creado, enviando url...')
             enviarMensajeWsp(mensajeCreacion) 
 
-            #time.sleep(1)
+            time.sleep(1)
             objExcelTmp = googleSheet.obtenerExcel(nombre_crear_excel, drive_service)
             urlExcelCreado = googleSheet.obtener_url_archivo(objExcelTmp['id'], drive_service)
 
@@ -411,7 +411,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Ya existe un excel con ese nombre')
             enviarMensajeWsp(data)
 
-            #time.sleep(1)
+            time.sleep(1)
 
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
@@ -433,7 +433,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Excel encontrado')
             enviarMensajeWsp(data)
 
-            #time.sleep(1)
+            time.sleep(1)
 
             #Aqui habría que crear el objetoExcel
             excelModificar = googleSheet.obtenerExcel(nombre_buscar_excel, drive_service)
@@ -463,7 +463,7 @@ def admChatBot(text, number, messageId, name):
             hojaModificar = googleSheet.obtenerHojaCalculo(excelModificar['id'], text, sheet_service)
             estadoUsuario[number]['estado'] = 'modificar_excel_elegir_accion' 
             
-            #time.sleep(1)
+            time.sleep(1)
             
             
             body = '¿Que deseas realizar en la hoja?'
@@ -477,7 +477,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Hoja NO encontrada')
             enviarMensajeWsp(data)
 
-            #time.sleep(1)
+            time.sleep(1)
 
             body = '¿Desea volver a intentar ingresar un nombre de una hoja?'
             footer = 'AsistenteWsp'
@@ -497,6 +497,7 @@ def admChatBot(text, number, messageId, name):
             hojaModificar.clear() #Limpiamos
             estadoUsuario[number]['estado'] = 'otra_accion'
 
+            
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
@@ -547,7 +548,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, MensajeFilasEliminar)
             enviarMensajeWsp(data)
 
-            #time.sleep(1)
+            time.sleep(1)
 
             msj2 = formatearMensajeTexto(number, 'Seleccione una opcion mediante el numero de su posicion')
             enviarMensajeWsp(msj2)
@@ -557,12 +558,12 @@ def admChatBot(text, number, messageId, name):
             enviarMensajeWsp(data)
             googleSheet.eliminarFilas(excelModificar['id'], hojaModificar, filasEliminar, 0, cliente) #Esto ya funciona
 
-            #time.sleep(1)             
+            time.sleep(1)             
 
             data2 = formatearMensajeTexto(number, 'Fila eliminada')
             enviarMensajeWsp(data2)
 
-            #time.sleep(1)
+            time.sleep(1)
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
@@ -577,7 +578,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'No existe el valor')
             enviarMensajeWsp(data)
 
-            #time.sleep(1)
+            time.sleep(1)
 
             body = '¿Quieres volver a intentar eliminar un gasto?'
             footer = 'AsistenteWsp'
@@ -596,13 +597,13 @@ def admChatBot(text, number, messageId, name):
 
             estadoEliminar = googleSheet.eliminarFilas(excelModificar['id'], hojaModificar, filasEliminar, text_num, cliente)
             
-            #time.sleep(1)
+            time.sleep(1)
 
             if estadoEliminar:
                 data2 = formatearMensajeTexto(number, f'Posicion {text_num} eliminada')
                 enviarMensajeWsp(data2)
                 
-                #time.sleep(1)
+                time.sleep(1)
 
                 body = '¿Necesita eliminar otro gasto?'
                 footer = 'AsistenteWsp'
@@ -617,7 +618,7 @@ def admChatBot(text, number, messageId, name):
                 data3 = formatearMensajeTexto(number, 'Valor ingresado fuera del rango')
                 enviarMensajeWsp(data3)
 
-                #time.sleep(1)
+                time.sleep(1)
 
                 body = '¿Quieres volver a intentar eliminar un gasto?'
                 footer = 'AsistenteWsp'
@@ -630,7 +631,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Valor ingresado invalido')
             enviarMensajeWsp(data)
 
-            #time.sleep(1)
+            time.sleep(1)
 
             body = '¿Quieres volver a intentar eliminar un gasto?'
             footer = 'AsistenteWsp'
@@ -682,7 +683,7 @@ def admChatBot(text, number, messageId, name):
         enviarMensajeWsp(data)
 
         
-        #time.sleep(1)
+        time.sleep(1)
 
         body = '¿Desea agregar otro gasto?'
         footer = 'AsistenteWsp'
@@ -708,7 +709,7 @@ def admChatBot(text, number, messageId, name):
             elementosGuardar.clear() #Esto se limpia para una proxima inyeccion de filas.
             excelModificar.clear() #Esto limpia el objeto para usarlo en otro excel
 
-            #time.sleep(1)
+            time.sleep(1)
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
@@ -738,7 +739,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Excel encontrado')
             enviarMensajeWsp(data)
 
-            #time.sleep(1)
+            time.sleep(1)
 
             #Aqui habría que crear el objetoExcel
             excelModificar = googleSheet.obtenerExcel(nombre_buscar_excel, drive_service)
@@ -760,7 +761,7 @@ def admChatBot(text, number, messageId, name):
         data2 = formatearMensajeTexto(number, 'Verificando...')
         enviarMensajeWsp(data2)
 
-        #time.sleep(1)
+        time.sleep(1)
         
         
         if googleSheet.existeHoja(excelModificar['id'], text, sheet_service):
@@ -768,7 +769,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'El nombre ya se está utilizando')
             enviarMensajeWsp(data) 
             
-            #time.sleep(1)
+            time.sleep(1)
 
             body = '¿Quieres volver a intentar crear una hoja?'
             footer = 'AsistenteWsp'
@@ -781,18 +782,18 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'Creando hoja...')
             enviarMensajeWsp(data)
             
-            #time.sleep(1)
+            time.sleep(1)
 
             googleSheet.crearNuevaHoja(excelModificar['id'], text, sheet_service, cliente)
 
             excelModificar.clear() #Esto limpia el objeto para usarlo en otro excel
 
-            #ime.sleep(1)
+            time.sleep(1)
 
             data3 = formatearMensajeTexto(number, 'Hoja creada')
             enviarMensajeWsp(data3)
 
-            #time.sleep(1)
+            time.sleep(1)
 
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
@@ -895,7 +896,7 @@ def admChatBot(text, number, messageId, name):
             list.append(listReplyData)
 
     for item in list:
-        #time.sleep(1)
+        time.sleep(1)
         enviarMensajeWsp(item)
 
 
