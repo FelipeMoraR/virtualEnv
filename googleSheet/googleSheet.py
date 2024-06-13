@@ -195,6 +195,22 @@ def crearNuevaHoja(excel_id, nombre_nueva_hoja, sheets_service, cliente):
     except Exception as e:
         print(f"Ocurrió un error al crear la nueva hoja: {e}")
         return None
+    
+def existeHoja(excel_id, nombre_hoja, sheets_service):
+    try:
+        # Obtener todas las hojas del archivo
+        spreadsheet = sheets_service.spreadsheets().get(spreadsheetId=excel_id).execute()
+        hojas = spreadsheet.get('sheets', [])
+        
+        # Verificar si alguna hoja tiene el nombre especificado
+        for hoja in hojas:
+            if hoja['properties']['title'] == nombre_hoja:
+                return True
+        return False
+    
+    except Exception as e:
+        print(f"Ocurrió un error al verificar la existencia de la hoja: {e}")
+        return False
 
 def crearExcel(nombre_excel, cliente, drive_service, sheet_service):
     try:
@@ -308,12 +324,12 @@ def obtener_url_archivo(id_excel, drive_service):
 
 
 # Conexion
-#drive_service = conexionDriveBuildService()
-#sheet_service = conexionSheetBuildService()
-#cliente = conexionDriveCliente()
+drive_service = conexionDriveBuildService()
+sheet_service = conexionSheetBuildService()
+cliente = conexionDriveCliente()
 
 # Verificar si existe una hoja de cálculo con un nombre específico
-#nombre_excel = "pedrito"
+nombre_excel = "pedrito"
 #nombre_hoja = 'sheet1'
 
 
@@ -324,11 +340,11 @@ def obtener_url_archivo(id_excel, drive_service):
 #]
 
 #Descubrimos el excel 
-#objeto = obtenerExcel(nombre_excel, drive_service)
+objeto = obtenerExcel(nombre_excel, drive_service)
 #print(obtenerHojaCalculo(objeto['id'], nombre_hoja, sheet_service))
 #print(obtener_url_archivo(objeto['id'], drive_service))
 #crearNuevaHoja(objeto['id'], 'sexito2', sheet_service, cliente)
-
+print(existeHoja(objeto['id'], 'pruebaAlgoNoExiste', sheet_service))
 #crearExcel('testV4', cliente, drive_service, sheet_service)
 #IMPORTANTE PARA ELIMINAR DEBES EJECUTAR ESTA FUNCION QUE MUESTRA LA POSICION DE LOS ELEMENTOS QUE QUIERES ELIMINAR
 #filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'Juan', cliente) #Esto da el numero de las filas del excel

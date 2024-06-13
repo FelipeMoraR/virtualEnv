@@ -253,7 +253,7 @@ def admChatBot(text, number, messageId, name):
         if 'hola' in text:
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
-            options = ['Ver un excel', 'Crear un excel', 'Modificar un excel']
+            options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed1', messageId)
             replyReaction = reaccionarMensaje(number, messageId, '💜')
             list.append(listReplyData)
@@ -283,8 +283,13 @@ def admChatBot(text, number, messageId, name):
             textMsg = formatearMensajeTexto(number, 'Vamos a crear un excel. ¿Cómo quieres nombrarlo?')
             list.append(textMsg)
 
-        elif 'modificar un excel' in text:
+        elif 'modificar una hoja de excel' in text:
             estadoUsuario[number]['estado'] = 'modificar_excel'
+            textMsg = formatearMensajeTexto(number, 'Dime el nombre del excel que quieres modificar')
+            list.append(textMsg)
+        
+        elif 'agregar una hoja a un excel' in text:
+            estadoUsuario[number]['estado'] = 'crear_hoja_excel'
             textMsg = formatearMensajeTexto(number, 'Dime el nombre del excel que quieres modificar')
             list.append(textMsg)
 
@@ -297,7 +302,7 @@ def admChatBot(text, number, messageId, name):
             data = formatearMensajeTexto(number, 'No entiendo')
             body = 'Solo entiendo estas opciones, ¿Que necesitas?'
             footer = 'AsistenteWsp'
-            options = ['Ver un excel', 'Crear un excel', 'Modificar un excel']
+            options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
             buttonsReplyData = generarMensajeConBotones(number, options, body, footer, 'sed2', messageId)
             list.append(data)
             list.append(buttonsReplyData)
@@ -409,7 +414,7 @@ def admChatBot(text, number, messageId, name):
 
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
-            options = ['Ver un excel', 'Crear un excel', 'Modificar un excel']
+            options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed5', messageId)
            
             list.append(listReplyData)
@@ -721,6 +726,99 @@ def admChatBot(text, number, messageId, name):
             list.append(listReplyData) 
 
         
+    #Flujo agregar hoja
+    elif estado == 'crear_hoja_excel':
+        nombre_buscar_excel = text
+        if text == 'salir':
+            estadoUsuario[number]['estado'] = 'inicio' 
+            data = formatearMensajeTexto(number, 'Apagando...')
+            enviarMensajeWsp(data)
+
+        elif googleSheet.verificarExistenciaExcel(nombre_buscar_excel, drive_service):
+            estadoUsuario[number]['estado'] = 'crear_hoja_excel_nombre' 
+            data = formatearMensajeTexto(number, 'Excel encontrado')
+            enviarMensajeWsp(data)
+
+            time.sleep(1)
+
+            #Aqui habría que crear el objetoExcel
+            excelModificar = googleSheet.obtenerExcel(nombre_buscar_excel, drive_service)
+            
+            data2 = formatearMensajeTexto(number, 'Ingrese el nombre de la hoja de calculo')
+            enviarMensajeWsp(data2)
+
+        else:
+            estadoUsuario[number]['estado'] = 'crear_hoja_excel_volver_intentar'
+            data = formatearMensajeTexto(number, 'El excel NO existe')
+            body = '¿Quieres volver a intentar crear una hoja?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed51', messageId)
+            list.append(data)
+            list.append(listReplyData) 
+
+    elif estado == 'crear_hoja_excel_nombre': 
+        data2 = formatearMensajeTexto(number, 'Verificando...')
+        enviarMensajeWsp(data2)
+
+        time.sleep(1)
+        
+        
+        if googleSheet.existeHoja(excelModificar['id'], text, sheet_service):
+            estadoUsuario[number]['estado'] = 'crear_hoja_excel_volver_intentar' 
+            data = formatearMensajeTexto(number, 'El nombre ya se está utilizando')
+            enviarMensajeWsp(data) 
+            
+            time.sleep(1)
+
+            body = '¿Quieres volver a intentar crear una hoja?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed51', messageId)
+            
+            list.append(listReplyData)
+        else:
+            estadoUsuario[number]['estado'] = 'otra_accion'
+            data = formatearMensajeTexto(number, 'Creando hoja...')
+            enviarMensajeWsp(data)
+            
+            time.sleep(1)
+
+            googleSheet.crearNuevaHoja(excelModificar['id'], text, sheet_service, cliente)
+
+            excelModificar.clear() #Esto limpia el objeto para usarlo en otro excel
+
+            time.sleep(1)
+
+            body = '¿Necesita otra cosa mas?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed57', messageId)
+            list.append(listReplyData) #Esto es para mandar mensajes
+
+
+    elif estado == 'crear_hoja_excel_volver_intentar':
+        if text == 'si':
+            estadoUsuario[number]['estado'] = 'crear_hoja_excel'
+            data = formatearMensajeTexto(number, 'Ingrese el nombre del excel a modificar')
+            list.append(data)
+
+        elif text == 'no':
+            estadoUsuario[number]['estado'] = 'inicio'
+            excelModificar.clear()
+            data = formatearMensajeTexto(number, 'Chau me voy a dormir, gil.')  
+
+            list.append(data)
+        else:
+            data = formatearMensajeTexto(number, 'Mensaje erroneo')
+            list.append(data)
+
+            body = '¿Quieres volver a intentar crear una hoja?'
+            footer = 'AsistenteWsp'
+            options = ['Si', 'No']
+            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed50', messageId)
+            list.append(listReplyData)
+
 
     elif estado == 'modificar_excel_volver_intentar':
         if text == 'si':
@@ -747,7 +845,7 @@ def admChatBot(text, number, messageId, name):
             estadoUsuario[number]['estado'] = 'espera_opcion'
             body = 'Hola de nuevo, ¿Qué necesitas?'
             footer = 'AsistenteWsp'
-            options = ['Ver un excel', 'Crear un excel', 'Modificar un excel']
+            options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
             listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed11', messageId)
             list.append(listReplyData)
             
