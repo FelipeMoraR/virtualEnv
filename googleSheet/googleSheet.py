@@ -324,12 +324,12 @@ def obtener_url_archivo(id_excel, drive_service):
 
 
 # Conexion
-drive_service = conexionDriveBuildService()
-sheet_service = conexionSheetBuildService()
-cliente = conexionDriveCliente()
+#drive_service = conexionDriveBuildService()
+#sheet_service = conexionSheetBuildService()
+#cliente = conexionDriveCliente()
 
 # Verificar si existe una hoja de cálculo con un nombre específico
-nombre_excel = "pedrito"
+#nombre_excel = "pedrito"
 #nombre_hoja = 'sheet1'
 
 
@@ -340,11 +340,11 @@ nombre_excel = "pedrito"
 #]
 
 #Descubrimos el excel 
-objeto = obtenerExcel(nombre_excel, drive_service)
+#objeto = obtenerExcel(nombre_excel, drive_service)
 #print(obtenerHojaCalculo(objeto['id'], nombre_hoja, sheet_service))
 #print(obtener_url_archivo(objeto['id'], drive_service))
 #crearNuevaHoja(objeto['id'], 'sexito2', sheet_service, cliente)
-print(existeHoja(objeto['id'], 'pruebaAlgoNoExiste', sheet_service))
+#print(existeHoja(objeto['id'], 'pruebaAlgoNoExiste', sheet_service))
 #crearExcel('testV4', cliente, drive_service, sheet_service)
 #IMPORTANTE PARA ELIMINAR DEBES EJECUTAR ESTA FUNCION QUE MUESTRA LA POSICION DE LOS ELEMENTOS QUE QUIERES ELIMINAR
 #filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'Juan', cliente) #Esto da el numero de las filas del excel
