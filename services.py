@@ -254,7 +254,7 @@ def admChatBot(text, number, messageId, name):
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
             options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
-            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed1', messageId)
+            listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed1', messageId)
             replyReaction = reaccionarMensaje(number, messageId, '💜')
             list.append(listReplyData)
             list.append(replyReaction)
@@ -300,10 +300,11 @@ def admChatBot(text, number, messageId, name):
 
         else:
             data = formatearMensajeTexto(number, 'No entiendo')
+            
             body = 'Solo entiendo estas opciones, ¿Que necesitas?'
             footer = 'AsistenteWsp'
             options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
-            buttonsReplyData = generarMensajeConBotones(number, options, body, footer, 'sed2', messageId)
+            buttonsReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed2', messageId)
             list.append(data)
             list.append(buttonsReplyData)
             
@@ -415,7 +416,7 @@ def admChatBot(text, number, messageId, name):
             body = 'Hola, ¿qué necesitas?'
             footer = 'AsistenteWsp'
             options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
-            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed5', messageId)
+            listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed5', messageId)
            
             list.append(listReplyData)
     
@@ -846,7 +847,7 @@ def admChatBot(text, number, messageId, name):
             body = 'Hola de nuevo, ¿Qué necesitas?'
             footer = 'AsistenteWsp'
             options = ['Ver un excel', 'Crear un excel', 'Modificar una hoja de excel', 'Agregar una hoja a un excel']
-            listReplyData = generarMensajeConBotones(number, options, body, footer, 'sed11', messageId)
+            listReplyData = listadoOpcionesMjs(number, options, body, footer, 'sed11', messageId)
             list.append(listReplyData)
             
 
