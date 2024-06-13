@@ -745,7 +745,7 @@ def admChatBot(text, number, messageId, name):
             #Aqui habría que crear el objetoExcel
             excelModificar = googleSheet.obtenerExcel(nombre_buscar_excel, drive_service)
             
-            data2 = formatearMensajeTexto(number, 'Ingrese el nombre de la hoja de calculo')
+            data2 = formatearMensajeTexto(number, 'Ingrese el nombre de la hoja de calculo a agregar')
             enviarMensajeWsp(data2)
 
         else:
@@ -791,6 +791,11 @@ def admChatBot(text, number, messageId, name):
 
             time.sleep(1)
 
+            data3 = formatearMensajeTexto(number, 'Hoja creada')
+            enviarMensajeWsp(data3)
+
+            time.sleep(1)
+
             body = '¿Necesita otra cosa mas?'
             footer = 'AsistenteWsp'
             options = ['Si', 'No']
@@ -800,13 +805,13 @@ def admChatBot(text, number, messageId, name):
 
     elif estado == 'crear_hoja_excel_volver_intentar':
         if text == 'si':
-            estadoUsuario[number]['estado'] = 'crear_hoja_excel'
-            data = formatearMensajeTexto(number, 'Ingrese el nombre del excel a modificar')
+            estadoUsuario[number]['estado'] = 'crear_hoja_excel_nombre'
+            data = formatearMensajeTexto(number, 'Ingrese el nombre de la hoja de calculo a agregar')
             list.append(data)
 
         elif text == 'no':
             estadoUsuario[number]['estado'] = 'inicio'
-            excelModificar.clear()
+            excelModificar.clear() #Limpiamos para evitar errores.
             data = formatearMensajeTexto(number, 'Chau me voy a dormir, gil.')  
 
             list.append(data)
