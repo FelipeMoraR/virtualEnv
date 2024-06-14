@@ -215,6 +215,47 @@ def crearNuevaHoja(excel_id, nombre_nueva_hoja, sheets_service, cliente):
         print(f"Ocurrió un error al crear la nueva hoja: {e}")
         return None
 
+def listarHojas(excel_id, sheets_service):
+    try:
+        # Obtener la información del documento
+        spreadsheet = sheets_service.spreadsheets().get(spreadsheetId=excel_id).execute()
+        hojas = spreadsheet.get('sheets', [])
+
+        # Extraer y mostrar los nombres de las hojas
+        nombres_hojas = [hoja['properties']['title'] for hoja in hojas]
+        
+        print("Lista de hojas en el documento:")
+        for nombre in nombres_hojas:
+            print(f"- {nombre}")
+        
+        return nombres_hojas
+
+    except Exception as e:
+        print(f"Ocurrió un error al intentar listar las hojas: {e}")
+        return None
+
+
+
+def formateoValoresPorEliminarHojas(hojas_calculo):
+    try:
+        valores_limpios = []
+        mensajes  = ""
+
+        for hoja in hojas_calculo:
+            valores_limpios.append(hoja)
+        
+        for index, valor in enumerate(valores_limpios):
+        
+            mensaje = "Posición {}: {}\n".format(index, valor)
+            mensajes += mensaje 
+        
+        return mensajes
+    
+    
+    except Exception as e:
+        print(f"ocurrió un error: {e}")
+
+
 def eliminarHoja(excel_id, nombre_hoja, sheets_service):
     try:
         # Obtener el ID de la hoja que queremos eliminar
@@ -374,13 +415,13 @@ def obtener_url_archivo(id_excel, drive_service):
 
 
 # Conexion
-drive_service = conexionDriveBuildService()
-sheet_service = conexionSheetBuildService()
-cliente = conexionDriveCliente()
+#drive_service = conexionDriveBuildService()
+#sheet_service = conexionSheetBuildService()
+#cliente = conexionDriveCliente()
 
 # Verificar si existe una hoja de cálculo con un nombre específico
-nombre_excel = "pedrito"
-nombre_hoja = 'pedrotestjajaja'
+#nombre_excel = "pedrito"
+#nombre_hoja = 'pedrotestjajaja'
 
 
 #rows_to_add = [
@@ -389,7 +430,7 @@ nombre_hoja = 'pedrotestjajaja'
 #]
 
 #Descubrimos el excel 
-objeto = obtenerExcel(nombre_excel, drive_service)
+#objeto = obtenerExcel(nombre_excel, drive_service)
 #print(obtenerHojaCalculo(objeto['id'], nombre_hoja, sheet_service))
 #print(obtener_url_archivo(objeto['id'], drive_service))
 #crearNuevaHoja(objeto['id'], 'sexito2', sheet_service, cliente)
@@ -397,11 +438,8 @@ objeto = obtenerExcel(nombre_excel, drive_service)
 #crearExcel('testV4', cliente, drive_service, sheet_service)
 #IMPORTANTE PARA ELIMINAR DEBES EJECUTAR ESTA FUNCION QUE MUESTRA LA POSICION DE LOS ELEMENTOS QUE QUIERES ELIMINAR
 #filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'Juan', cliente) #Esto da el numero de las filas del excel
-if eliminarHoja(objeto['id'], nombre_hoja, sheet_service):
-    print('se borró')
-else:
-    print('no se borró')
-
+#hojas = listarHojas(objeto['id'], sheet_service)
+#print(formateoValoresPorEliminarHojas(hojas))
 #print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas, cliente))
 
 #eliminarFilas(objeto['id'], objeto['name'], filas, 0, cliente)

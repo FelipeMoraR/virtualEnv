@@ -893,7 +893,14 @@ def admChatBot(text, number, messageId, name):
 
             #Aqui habría que crear el objetoExcel
             excelModificar = googleSheet.obtenerExcel(nombre_buscar_excel, drive_service)
+            hojas = googleSheet.listarHojas(excelModificar['id'], sheet_service)
+            mensajesFormateados = googleSheet.formateoValoresPorEliminarHojas(hojas)
+
+            mensajeWspFormateado = formatearMensajeTexto(number, mensajesFormateados)
+            enviarMensajeWsp(mensajeWspFormateado)
             
+            time.sleep(1)
+
             data2 = formatearMensajeTexto(number, 'Ingrese el nombre de la hoja de calculo a eliminar')
             enviarMensajeWsp(data2)
 
