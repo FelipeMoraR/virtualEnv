@@ -42,7 +42,7 @@ def obtenerMensajeWsp(message):
         text = message['interactive']['button_reply']['title']
     else:
         text = 'mensaje no reconocido'
-    
+    print('mensaje enviado por ti => ', message)
     return text
 
 #Esto es basicamente el metodo post de meta, con esta función el bot puede mandar los mensajes.
