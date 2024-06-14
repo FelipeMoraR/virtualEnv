@@ -164,6 +164,25 @@ def cambiarNombreHoja(excel_id, nombre_hoja, sheets_service):
     except Exception as e:
         print(f"ocurrió un error al cambiar el nombre de la hoja: {e}")
 
+def obtenerIdHoja(excel_id, nombre_hoja, sheets_service):
+    try:
+        # Obtener todas las hojas del archivo
+        spreadsheet = sheets_service.spreadsheets().get(spreadsheetId=excel_id).execute()
+        hojas = spreadsheet.get('sheets', [])
+        
+        # Buscar la hoja por su nombre y devolver su ID si se encuentra
+        for hoja in hojas:
+            if hoja['properties']['title'] == nombre_hoja:
+                return hoja['properties']['sheetId']
+        
+        # Si no se encuentra la hoja, retornar None
+        return None
+    
+    except Exception as e:
+        print(f"Ocurrió un error al obtener el ID de la hoja '{nombre_hoja}': {e}")
+        return None
+    
+
 def crearNuevaHoja(excel_id, nombre_nueva_hoja, sheets_service, cliente):
     try:
         # Crear la solicitud para añadir una nueva hoja
@@ -195,7 +214,38 @@ def crearNuevaHoja(excel_id, nombre_nueva_hoja, sheets_service, cliente):
     except Exception as e:
         print(f"Ocurrió un error al crear la nueva hoja: {e}")
         return None
+
+def eliminarHoja(excel_id, nombre_hoja, sheets_service):
+    try:
+        # Obtener el ID de la hoja que queremos eliminar
+        hoja_id = obtenerIdHoja(excel_id, nombre_hoja, sheets_service)
+        
+        if hoja_id is None:
+            print(f"No se encontró la hoja '{nombre_hoja}' en el documento con ID '{excel_id}'")
+            return False
+        
+        # Crear la solicitud para eliminar la hoja
+        solicitud = {
+            'requests': [
+                {
+                    'deleteSheet': {
+                        'sheetId': hoja_id
+                    }
+                }
+            ]
+        }
+        
+        # Ejecutar la solicitud para eliminar la hoja
+        response = sheets_service.spreadsheets().batchUpdate(spreadsheetId=excel_id, body=solicitud).execute()
+        
+        print('response => ',response)
+        print(f"Se eliminó la hoja '{nombre_hoja}' del documento con ID '{excel_id}'")
+        return True
     
+    except Exception as e:
+        print(f"Ocurrió un error al intentar eliminar la hoja '{nombre_hoja}': {e}")
+        return False
+
 def existeHoja(excel_id, nombre_hoja, sheets_service):
     try:
         # Obtener todas las hojas del archivo
@@ -324,14 +374,13 @@ def obtener_url_archivo(id_excel, drive_service):
 
 
 # Conexion
-#drive_service = conexionDriveBuildService()
-#sheet_service = conexionSheetBuildService()
-#cliente = conexionDriveCliente()
+drive_service = conexionDriveBuildService()
+sheet_service = conexionSheetBuildService()
+cliente = conexionDriveCliente()
 
 # Verificar si existe una hoja de cálculo con un nombre específico
-#nombre_excel = "pedrito"
-#nombre_hoja = 'sheet1'
-
+nombre_excel = "pedrito"
+nombre_hoja = 'pedrotestjajaja'
 
 
 #rows_to_add = [
@@ -340,7 +389,7 @@ def obtener_url_archivo(id_excel, drive_service):
 #]
 
 #Descubrimos el excel 
-#objeto = obtenerExcel(nombre_excel, drive_service)
+objeto = obtenerExcel(nombre_excel, drive_service)
 #print(obtenerHojaCalculo(objeto['id'], nombre_hoja, sheet_service))
 #print(obtener_url_archivo(objeto['id'], drive_service))
 #crearNuevaHoja(objeto['id'], 'sexito2', sheet_service, cliente)
@@ -348,6 +397,10 @@ def obtener_url_archivo(id_excel, drive_service):
 #crearExcel('testV4', cliente, drive_service, sheet_service)
 #IMPORTANTE PARA ELIMINAR DEBES EJECUTAR ESTA FUNCION QUE MUESTRA LA POSICION DE LOS ELEMENTOS QUE QUIERES ELIMINAR
 #filas = identificarValoresFilasEliminar(objeto['id'], objeto['name'], 'Juan', cliente) #Esto da el numero de las filas del excel
+if eliminarHoja(objeto['id'], nombre_hoja, sheet_service):
+    print('se borró')
+else:
+    print('no se borró')
 
 #print(formateoValoresPorEliminar(objeto['id'], objeto['name'], filas, cliente))
 
