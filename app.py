@@ -16,8 +16,10 @@ def verificar_token():
         challenge = request.args.get('hub.challenge')
 
         if token == sett.token and challenge != None:
+            print('challenge => ', challenge)
             return challenge
         else:
+            print('token incorrecto')
             return 'token incorrecto', 403
     except Exception as e:
         return e, 403
@@ -38,10 +40,11 @@ def recibir_mensajes():
         text = services.obtenerMensajeWsp(message)
         
         services.admChatBot(text, number, messageId, name)
-        
+        print('enviado')
         return 'enviado'
 
     except Exception as e:
+        print('No enviado' + str(e))
         return 'no enviado' + str(e)
 
 if __name__ == '__main__':
